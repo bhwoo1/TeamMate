@@ -1,18 +1,14 @@
 "use client"
 
-
-import Link from "next/link";
 import React from "react";
+import Menu from "./Menu";
 
+const NavBar: React.FC = () => {
 
-
-const NavBar:React.FC = () => {
-    
-    return(
-        <header className="fixed left-0 right-0 top-0 py-4 z-50 user-not-selectable bg-white">
-            <nav className="container mx-auto flex items-center justify-between">
-                <Link href="/">팀메이트</Link>
-                
+    return (
+        <header className={`fixed left-0 top-0 h-full p-8 z-10 user-not-selectable bg-white flex flex-col justify-between`}>
+            <nav className="flex flex-col items-start space-y-4 p-8">
+                <Menu />
             </nav>
         </header>
     );

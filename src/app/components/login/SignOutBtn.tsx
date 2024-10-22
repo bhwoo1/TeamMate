@@ -1,14 +1,17 @@
 "use client"; // 클라이언트 컴포넌트로 설정
 
 import { signOut } from "next-auth/react";
+import { FaPowerOff } from "react-icons/fa";
 
-export default function SignOutBtn() {
+const SignOutBtn = () => {
   return (
     <button
-      className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+      className="font-bold py-2 px-4 rounded text-sm hover:text-red-600"
       onClick={() => signOut()}
     >
-      <p>로그아웃</p>
+      <p className="text-3xl"><FaPowerOff /></p>
     </button>
   );
 }
+
+export default SignOutBtn;

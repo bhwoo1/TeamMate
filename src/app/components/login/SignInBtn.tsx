@@ -3,7 +3,7 @@
 import { signIn } from "next-auth/react";
 
 
-export default function SignInBtn() {
+const SignInBtn = () => {
 
   const loginBtnClick = async () => {
     await signIn("naver");
@@ -18,3 +18,6 @@ export default function SignInBtn() {
     </button>
   );
 }
+
+
+export default SignInBtn;
