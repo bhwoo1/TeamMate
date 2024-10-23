@@ -11,6 +11,7 @@ const Menu:React.FC = () => {
     return(
         <div className= "left-0 w-full h-full flex flex-col justify-start">
             <Link href="/" className="text-xl font-bold p-8" onClick={() => setCurrentPage("")}>팀메이트</Link>
+            <p className="pl-8 pb-8 font-bold">{session?.user?.name} 님</p>
             <Link href="/notice">
                 <div className="p-8 cursor-pointer" onClick={() => setCurrentPage("notice")} >
                     <p className={currentPage === 'notice' ? 
