@@ -47,12 +47,14 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
-  emailVerified DateTime? @map("email_verified")
+  emailVerified DateTime?
   image         String?
+  role          String? @default("user")
+  resultcode    String? 
   accounts      Account[]
   sessions      Session[]
- 
-  @@map("users")
+  message       String?
+  createdAt     DateTime  @default(now()) // 추가
 }
  
 model VerificationToken {
