@@ -65,3 +65,41 @@ model VerificationToken {
   @@unique([identifier, token])
   @@map("verification_tokens")
 }
+
+
+model Post {
+  id         Int       @id @default(autoincrement())
+  title      String
+  content    String
+  posteduser String
+  createdAt  DateTime  @default(now())
+  comments   Comment[] // Post에 연결된 Comment 목록을 참조
+}
+
+model Comment {
+  id         Int       @id @default(autoincrement())
+  postid     Int
+  title      String
+  content    String
+  posteduser String
+  createdAt  DateTime  @default(now())
+  
+  post       Post      @relation(fields: [postid], references: [id]) // Post와의 관계 설정
+}
+
+model Notice {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model Roster {
+  backnumber        Int
+  name              String
+  position          String
+  birthdate         String
+  injury            boolean @default(false)
+  injuredpart       String
+  recoveryperiod    String
+}

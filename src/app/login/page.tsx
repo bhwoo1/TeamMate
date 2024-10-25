@@ -16,7 +16,7 @@ const LoginPage = () => {
     }, [session])
 
     return(
-        <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+        <main className="flex flex-col justify-center items-center h-screen">
             <h1>로그인 페이지</h1>
             <SignInBtn />
         </main>
