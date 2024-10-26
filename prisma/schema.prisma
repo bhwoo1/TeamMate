@@ -95,11 +95,13 @@ model Notice {
 }
 
 model Roster {
+  id                Int       @id @default(autoincrement())
   backnumber        Int
+  profileimage      String
   name              String
   position          String
   birthdate         String
-  injury            boolean @default(false)
+  injury            Boolean @default(false)
   injuredpart       String
   recoveryperiod    String
 }
