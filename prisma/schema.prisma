@@ -91,6 +91,7 @@ model Notice {
   id        Int      @id @default(autoincrement())
   title     String
   content   String
+  postedadmin String
   createdAt DateTime @default(now())
 }
 
