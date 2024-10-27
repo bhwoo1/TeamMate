@@ -7,15 +7,13 @@ const NoticeBoard = () => {
     // const [noticeArr, setNoticeArr] = useState([]);
 
     useEffect(() => {
-        axios.post("/api/notice", {
-            action: 'findMany'
-        })
+        axios.get("/api/notice?action=findMany")
         .then((res) => {
             console.log(res.data);
             //
         })
         .catch((err) => {
-            console.log(err);
+            console.log("Error response:", err.response?.data);
         });
 
     }, []);
