@@ -1,9 +1,26 @@
 import prisma from "@/app/lib/prisma";
 import { NextResponse } from "next/server";
 
+async function isAdmin(requestUser: string) {
+    const user = await prisma.user.findUnique({
+        where: { email: requestUser },
+    });
+    return user?.role === "admin";
+}
+
 export async function POST(req: Request) {
     try {
         const body = await req.json();
+        const requestUser = req.headers.get("requestUser");
+
+        if (!requestUser) {
+            return NextResponse.json({ error: "User is required" }, { status: 400 });
+        }
+
+        if (!(await isAdmin(requestUser))) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+        }
+
         if (body.action === "create") {
             const notice = await prisma.notice.create({
                 data: { title: body.title, content: body.content, postedadmin: body.postedadmin },
@@ -14,7 +31,7 @@ export async function POST(req: Request) {
         }
     } catch (err) {
         console.error(err);
-        return NextResponse.json({ error: "Failed to create post" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to create notice" }, { status: 500 });
     }
 }
 
@@ -22,6 +39,7 @@ export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
         const id = searchParams.get("id");
+        
 
         if (id) {
             // id가 존재하면 해당 id로 특정 게시글 조회
@@ -30,7 +48,7 @@ export async function GET(req: Request) {
             });
 
             if (!notice) {
-                return NextResponse.json({ error: "Post not found" }, { status: 404 });
+                return NextResponse.json({ error: "Notice not found" }, { status: 404 });
             }
 
             return NextResponse.json(notice, { status: 200 });
@@ -44,7 +62,31 @@ export async function GET(req: Request) {
         }
     } catch (err) {
         console.error(err);
-        return NextResponse.json({ error: "Failed to retrieve post(s)" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to retrieve notice(s)" }, { status: 500 });
+    }
+}
+
+export async function PUT(req: Request) {
+    try {
+        const body = await req.json();
+        const requestUser = req.headers.get("requestUser");
+
+        if (!requestUser) {
+            return NextResponse.json({ error: "User is required" }, { status: 400 });
+        }
+
+        if (!(await isAdmin(requestUser))) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+        }
+
+        const updatedNotice = await prisma.notice.update({
+            where: { id: body.id },
+            data: { title: body.title, content: body.content }
+        });
+        return NextResponse.json(updatedNotice, { status: 200 });
+    } catch (err) {
+        console.error(err);
+        return NextResponse.json({ error: "Failed to update notice" }, { status: 500 });
     }
 }
 
@@ -52,6 +94,17 @@ export async function GET(req: Request) {
 export async function DELETE(req: Request) {
     try{
         const body = await req.json();
+        const requestUser = req.headers.get("requestUser");
+
+        if (!requestUser) {
+            return NextResponse.json({ error: "User is required" }, { status: 400 });
+        }
+
+        if (!(await isAdmin(requestUser))) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+        }
+
+
         if (prisma.notice.fields.postedadmin === body.requestuser) {
             const deletedNotice = await prisma.notice.delete({
                 where: {id: body.id}
@@ -63,6 +116,6 @@ export async function DELETE(req: Request) {
         }
     } catch (err) {
         console.log(err);
-        return NextResponse.json({ error: "Failed to delete post" }, { status: 500 });
+        return NextResponse.json({ error: "Failed to delete notice" }, { status: 500 });
     }
 }

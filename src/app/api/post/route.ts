@@ -49,10 +49,60 @@ export async function GET(req: Request) {
     }
 }
 
+export async function PUT(req: Request) {
+    try {
+        const body = await req.json();
+        const requestUser = req.headers.get("requestUser");
+
+        if (!requestUser) {
+            return NextResponse.json({ error: "User is required" }, { status: 400 });
+        }
+
+         // 해당 포스트를 조회하여 posteduser 가져오기
+        const post = await prisma.post.findUnique({
+            where: { id: body.id },
+        });
+
+        // 포스트가 존재하지 않는 경우
+        if (!post) {
+            return NextResponse.json({ error: "Post not found" }, { status: 404 });
+        }
+
+
+        if (post.posteduser === requestUser) {
+            const updatedPost = await prisma.post.update({
+                where: { id: body.id },
+                data: { title: body.title, content: body.content }
+            });
+            return NextResponse.json(updatedPost, { status: 200 });
+        }
+    } catch (err) {
+        console.error(err);
+        return NextResponse.json({ error: "Failed to update notice" }, { status: 500 });
+    }
+}
+
 export async function DELETE(req: Request) {
     try{
         const body = await req.json();
-        if (prisma.post.fields.posteduser === body.requestuser) {
+        const requestUser = req.headers.get("requestUser");
+
+        if (!requestUser) {
+            return NextResponse.json({ error: "User is required" }, { status: 400 });
+        }
+
+        // 해당 포스트를 조회하여 posteduser 가져오기
+        const post = await prisma.post.findUnique({
+            where: { id: body.id },
+        });
+
+        // 포스트가 존재하지 않는 경우
+        if (!post) {
+            return NextResponse.json({ error: "Post not found" }, { status: 404 });
+        }
+
+
+        if (post.posteduser === requestUser) {
             const deletedPost = await prisma.post.delete({
                 where: {id: body.id}
             });
