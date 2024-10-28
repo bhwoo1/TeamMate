@@ -9,7 +9,7 @@ const MainComponent = () => {
     const {data: session} = useSession();
 
     useEffect(() => {
-        console.log(session);
+        console.log(session?.user?.email);
     }, []);
 
 
