@@ -4,6 +4,7 @@ import "./globals.css";
 // import ConditionalNavBar from "./components/layout/ConditionalNavBar";
 import { SessionProvider } from "next-auth/react";
 import ConditionalNavBar from "./components/layout/ConditionalNavBar";
+import ClientProvider from "./components/ClientProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -22,6 +23,7 @@ export const metadata: Metadata = {
 };
 
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -32,10 +34,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SessionProvider>
-          <ConditionalNavBar />
-          {children}
-        </SessionProvider>
+        <ClientProvider>
+          <SessionProvider>
+            <ConditionalNavBar />
+            {children}
+          </SessionProvider>
+        </ClientProvider>
       </body>
     </html>
   );

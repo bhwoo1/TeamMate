@@ -16,9 +16,6 @@ const NoticeCreatePage = () => {
     const {data: session} = useSession();
     const router = useRouter();
 
-    // const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    //     setNotice({ ...notice, content: e.target.value });
-    // }
 
 
     const handleSubmit = async (e: FormEvent) => {
