@@ -5,18 +5,18 @@ import axios from "axios";
 import React from "react";
 import { useQuery } from "react-query";
 
-
+const fetchNotice = async (id: number) => {
+    const response = await axios.get(`/api/notice?id=${id}`);
+    return response.data;
+}
 
 const NoticePost = (props: {params: {id: number}}) => {
 
-    const fetchNotice = async () => {
-        const response = await axios.get(`/api/notice?id=${props.params.id}`);
-        return response.data;
-    }
+    
 
     const { data: notice, isLoading, isError, error } = useQuery<ReceivedNotice, Error>(
-        "notice",
-        fetchNotice
+        ["notice", props.params.id],
+        () => fetchNotice(props.params.id)
     );
 
     if (isLoading) return <p className="text-center">Loading...</p>;
