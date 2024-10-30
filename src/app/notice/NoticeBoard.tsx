@@ -8,6 +8,7 @@ import { FaPencilAlt } from "react-icons/fa";
 import { ReceivedNotice } from "../Type";
 import { useRouter } from "next/navigation";
 import { useQuery } from "react-query";
+import { userRoleStore } from "../zustand/store";
 
 const fetchNotices = async () => {
     const response = await axios.get("/api/notice?action=findMany");
@@ -16,6 +17,7 @@ const fetchNotices = async () => {
 
 const NoticeBoard = () => {
     const router = useRouter();
+    const {isAdmin} = userRoleStore();
 
     const { data: noticeArr = [], isLoading, isError, error } = useQuery<ReceivedNotice[], Error>(
         "noticeList",
@@ -54,16 +56,18 @@ const NoticeBoard = () => {
                     </tbody>
                 </table>
             )}
-            <div className="flex justify-end items-center mb-4 pt-4">
-                <Link href={'/notice/create'}>
-                    <button
-                        className="px-4 py-2 bg-blue-500 text-white rounded flex items-center"
-                    >
-                        <FaPencilAlt className="text-lg" />
-                        <span className="pl-2">작성</span>
-                    </button>
-                </Link>
-            </div>
+            {isAdmin &&
+                <div className="flex justify-end items-center mb-4 pt-4">
+                    <Link href={'/notice/create'}>
+                        <button
+                            className="px-4 py-2 bg-blue-500 text-white rounded flex items-center"
+                        >
+                            <FaPencilAlt className="text-lg" />
+                            <span className="pl-2">작성</span>
+                        </button>
+                    </Link>
+                </div>
+            }
         </div>
     );
 };

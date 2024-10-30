@@ -1,6 +1,8 @@
 "use client"
 
+import AdminPage from "@/app/components/AdminPage";
 import { Notice } from "@/app/Type";
+
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -45,15 +47,17 @@ const NoticeCreatePage = () => {
 
 
     return(
-        <main className="flex min-h-screen flex-col items-center justify-center p-20">
-            <form onSubmit={handleSubmit}>
-                <h2>공지 등록</h2>
-                <input type="text" id="title" name="title" value={notice.title} onChange={(e) => setNotice({...notice, title: e.target.value})}/>
-                <textarea id="content" name="content" value={notice.content} onChange={(e) => setNotice({ ...notice, content: e.target.value })}/>
-                <button>취소</button>
-                <button type="submit">등록</button>
-            </form>
-        </main>
+        <AdminPage>
+            <main className="flex min-h-screen flex-col items-center justify-center p-20">
+                <form onSubmit={handleSubmit}>
+                    <h2>공지 등록</h2>
+                    <input type="text" id="title" name="title" value={notice.title} onChange={(e) => setNotice({...notice, title: e.target.value})}/>
+                    <textarea id="content" name="content" value={notice.content} onChange={(e) => setNotice({ ...notice, content: e.target.value })}/>
+                    <button>취소</button>
+                    <button type="submit">등록</button>
+                </form>
+            </main>
+        </AdminPage>
     );
 }
 
