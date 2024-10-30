@@ -1,13 +1,23 @@
 import { create } from 'zustand'
 
-interface StoreState {
-    currentPage: string;
-    setCurrentPage: (page: string) => void;
-  }
+interface PageStore {
+  currentPage: string;
+  setCurrentPage: (page: string) => void;
+}
 
-const usePageStore = create<StoreState>(set => ({
+interface RoleStore {
+  userRole: string;
+  setUserRole: (role: string) => void;
+}
+
+const usePageStore = create<PageStore>((set) => ({
   currentPage: "",
   setCurrentPage: (page: string) => set({ currentPage: page })
-}))
+}));
 
-export default usePageStore;
+const userRoleStore = create<RoleStore>((set) => ({
+  userRole: "user",
+  setUserRole: (role: string) => set({ userRole: role})
+}));
+
+export {usePageStore, userRoleStore};
