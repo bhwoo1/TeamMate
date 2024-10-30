@@ -6,8 +6,8 @@ interface PageStore {
 }
 
 interface RoleStore {
-  userRole: string;
-  setUserRole: (role: string) => void;
+  isAdmin: boolean;
+  setIsAdmin: (isAdmin: boolean) => void;
 }
 
 const usePageStore = create<PageStore>((set) => ({
@@ -16,8 +16,8 @@ const usePageStore = create<PageStore>((set) => ({
 }));
 
 const userRoleStore = create<RoleStore>((set) => ({
-  userRole: "user",
-  setUserRole: (role: string) => set({ userRole: role})
+  isAdmin: false,
+  setIsAdmin: (state: boolean) => set({ isAdmin: state})
 }));
 
 export {usePageStore, userRoleStore};

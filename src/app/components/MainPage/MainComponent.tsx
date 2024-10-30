@@ -1,22 +1,15 @@
-"use client"
-
-import React, { useEffect } from "react";
+import React from "react";
 import AuthPage from "../AuthPage";
-import { useSession } from "next-auth/react";
+import UserRoleVerification from "../UserRoleVerification";
 
 const MainComponent = () => {
-
-    const {data: session} = useSession();
-
-    useEffect(() => {
-        console.log(session?.user?.email);
-    }, []);
 
 
     return(
         <AuthPage>
+            <UserRoleVerification />
             <main className="flex flex-col gap-8 p-16 items-center sm:items-start">
-                
+            
             </main>
         </AuthPage>
     );
