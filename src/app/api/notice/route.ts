@@ -104,16 +104,25 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
+        // 요청 본문에서 ID 가져오기
+        const noticeId = parseInt(body.id);
 
-        if (prisma.notice.fields.postedadmin === body.requestuser) {
-            const deletedNotice = await prisma.notice.delete({
-                where: {id: body.id}
-            });
-            return NextResponse.json(deletedNotice, { status: 200 });
+        // 게시글 존재 여부 확인
+        const notice = await prisma.notice.findUnique({
+            where: { id: noticeId }
+        });
+
+        if (!notice) {
+            return NextResponse.json({ error: "Notice not found" }, { status: 404 });
         }
-        else {
-            return NextResponse.json({error: "You do not have permission to delete"}, { status: 400 })
-        }
+
+
+        // 게시글 삭제
+        const deletedNotice = await prisma.notice.delete({
+            where: { id: noticeId }
+        });
+
+        return NextResponse.json(deletedNotice, { status: 200 });
     } catch (err) {
         console.log(err);
         return NextResponse.json({ error: "Failed to delete notice" }, { status: 500 });

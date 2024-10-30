@@ -53,7 +53,7 @@ const NoticeCreatePage = () => {
                     <h2>공지 등록</h2>
                     <input type="text" id="title" name="title" value={notice.title} onChange={(e) => setNotice({...notice, title: e.target.value})}/>
                     <textarea id="content" name="content" value={notice.content} onChange={(e) => setNotice({ ...notice, content: e.target.value })}/>
-                    <button>취소</button>
+                    <button type="button" onClick={() => router.push('/notice')}>취소</button>
                     <button type="submit">등록</button>
                 </form>
             </main>
