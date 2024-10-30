@@ -91,9 +91,11 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ error: "User is required" }, { status: 400 });
         }
 
+        const postId = parseInt(body.id);
+
         // 해당 포스트를 조회하여 posteduser 가져오기
         const post = await prisma.post.findUnique({
-            where: { id: body.id },
+            where: { id: postId },
         });
 
         // 포스트가 존재하지 않는 경우
@@ -104,7 +106,7 @@ export async function DELETE(req: Request) {
 
         if (post.posteduser === requestUser) {
             const deletedPost = await prisma.post.delete({
-                where: {id: body.id}
+                where: {id: postId}
             });
             return NextResponse.json(deletedPost, { status: 200 });
         }
