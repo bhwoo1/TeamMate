@@ -22,7 +22,7 @@ const NoticeBoard = () => {
     const { data: noticeArr = [], isLoading, isError, error } = useQuery<ReceivedNotice[], Error>(
         "noticeList",
         fetchNotices
-    )
+    );
 
     const noticeClick = (id: number) => {
         router.push(`/notice/${id}`)
@@ -41,6 +41,7 @@ const NoticeBoard = () => {
                         <tr className="bg-gray-100">
                             <th className="border px-4 py-2">번호</th>
                             <th className="border px-4 py-2">제목</th>
+                            <th className="border px-4 py-2">작성자</th>
                             <th className="border px-4 py-2">작성일</th>
                         </tr>
                     </thead>
@@ -50,6 +51,7 @@ const NoticeBoard = () => {
                                 <tr key={notice.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => noticeClick(notice.id)}>
                                     <td className="border px-4 py-2 text-center">{index + 1}</td>
                                     <td className="border px-4 py-2">{notice.title}</td>
+                                    <td className="border px-4 py-2">{notice.postedadmin}</td>
                                     <td className="border px-4 py-2 text-center">{notice.createdAt}</td>
                                 </tr>
                         ))}
