@@ -27,6 +27,9 @@ const PostBoard = () => {
     if (isLoading) return <p className="text-center">Loading...</p>;
     if (isError) return <p className="text-center">Error: {error.message}</p>;
 
+
+    
+
     return(
         <div className="p-8 w-full max-w-2xl">
             {postArr.length === 0 ? (

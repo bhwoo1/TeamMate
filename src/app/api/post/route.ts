@@ -28,6 +28,9 @@ export async function GET(req: Request) {
             // id가 존재하면 해당 id로 특정 게시글 조회
             const post = await prisma.post.findUnique({
                 where: { id: Number(id) },
+                include: {
+                    comments: true, // comments 관계를 포함하여 조회
+                },
             });
 
             if (!post) {

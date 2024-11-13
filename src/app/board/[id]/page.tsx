@@ -1,6 +1,7 @@
 "use client"
 
-import { ReceivedNotice } from "@/app/Type";
+import Comment from "@/app/components/comment/Comment";
+import { ReceivedPost } from "@/app/Type";
 import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -24,9 +25,17 @@ const deletePost = async ({ id, user }: { id: number; user: string }) => {
 }
 
 const PostPage = (props: {params: {id: number}}) => {
-    const { data: post, isLoading, isError, error } = useQuery<ReceivedNotice, Error>(
+    const { data: post, isLoading, isError, error } = useQuery<ReceivedPost, Error>(
         ["post", props.params.id],
-        () => fetchPost(props.params.id)
+        () => fetchPost(props.params.id),
+        {
+            onSuccess: (data) => {
+                console.log("Post fetched successfully:", data);
+            },
+            onError: (error) => {
+                console.error("Error fetching post:", error);
+            }
+        }
     );
     const router = useRouter();
     const {data: session} = useSession();
@@ -38,7 +47,7 @@ const PostPage = (props: {params: {id: number}}) => {
         onError: (error: AxiosError) => {
             console.error("Delete request failed:", error.response?.data || error.message);
         }
-      });
+    });
 
     if (isLoading) return <p className="text-center">Loading...</p>;
     if (isError) return <p className="text-center">Error: {error.message}</p>;
@@ -55,9 +64,10 @@ const PostPage = (props: {params: {id: number}}) => {
         <main className="flex min-h-screen flex-col items-center justify-center p-20">
             <p>{post?.title}</p>
             <p>{post?.content}</p>
-            <p>{post?.postedadmin}</p>
+            <p>{post?.posteduser}</p>
             <p>{post?.createdAt}</p>
             <button onClick={handleDelete}>삭제</button>
+            <Comment id={Number(post?.id)} comments={post?.comments || []} />
         </ main>
     );
 }
