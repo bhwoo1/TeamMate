@@ -21,7 +21,7 @@ const PostBoard = () => {
     );
 
     const postClick = (id: number) => {
-        router.push(`/post/${id}`)
+        router.push(`/board/${id}`)
     };
 
     if (isLoading) return <p className="text-center">Loading...</p>;
@@ -56,7 +56,7 @@ const PostBoard = () => {
                 </table> 
             )}
             <div className="flex justify-end items-center mb-4 pt-4">
-                    <Link href={'/notice/create'}>
+                    <Link href={'/board/create'}>
                         <button
                             className="px-4 py-2 bg-blue-500 text-white rounded flex items-center"
                         >
