@@ -46,7 +46,7 @@ export async function PUT(req: Request) {
         }
 
          // 해당 포스트를 조회하여 posteduser 가져오기
-        const post = await prisma.comment.findUnique({
+        const post = await prisma.post.findUnique({
             where: { id: body.id },
         });
 
@@ -55,10 +55,20 @@ export async function PUT(req: Request) {
             return NextResponse.json({ error: "Post not found" }, { status: 404 });
         }
 
+        const comment = await prisma.comment.findUnique({
+            where: { id: body.commentId },  // 댓글 ID로 댓글 조회
+        });
+
+        // 댓글이 존재하지 않는 경우
+        if (!comment) {
+            return NextResponse.json({ error: "Comment not found" }, { status: 404 });
+        }
+
+
 
         if (post.posteduser === requestUser) {
             const updatedComment = await prisma.comment.update({
-                where: { id: body.id },
+                where: { id: body.commentId },
                 data: { content: body.content }
             });
             return NextResponse.json(updatedComment, { status: 200 });
@@ -79,7 +89,7 @@ export async function DELETE(req: Request) {
         }
 
         // 해당 포스트를 조회하여 posteduser 가져오기
-        const post = await prisma.comment.findUnique({
+        const post = await prisma.post.findUnique({
             where: { id: body.id },
         });
 
@@ -88,10 +98,19 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ error: "Post not found" }, { status: 404 });
         }
 
+        const comment = await prisma.comment.findUnique({
+            where: { id: body.commentId },  // 댓글 ID로 댓글 조회
+        });
+
+        // 댓글이 존재하지 않는 경우
+        if (!comment) {
+            return NextResponse.json({ error: "Comment not found" }, { status: 404 });
+        }
+
 
         if (post.posteduser === requestUser) {
             const deletedComment = await prisma.comment.delete({
-                where: {id: body.id}
+                where: {id: body.commentId}
             });
             return NextResponse.json(deletedComment, { status: 200 });
         }
@@ -103,3 +122,4 @@ export async function DELETE(req: Request) {
         return NextResponse.json({ error: "Failed to delete post" }, { status: 500 });
     }
 }
+

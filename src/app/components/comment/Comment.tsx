@@ -1,16 +1,77 @@
 import type { Comment } from "@/app/Type";
-import React from "react";
+import React, { ChangeEvent, useState } from "react";
 import CommentForm from "./CommentForm";
 import { useSession } from "next-auth/react";
+import axios, { AxiosError } from "axios";
+import { useMutation } from "react-query";
+
+const deleteComment = async ({id, user, commentId}: {id: number; user:string, commentId: number}) => {
+    await axios.delete('/api/comment', {
+        headers: {
+            requestUser: user
+        },
+        data: {
+            id: id,
+            commentId: commentId
+        }
+    });
+}
+
+const updateComment = async ({id, user, commentId, comment}: {id: number; user:string, commentId: number, comment:string}) => {
+    await axios.put('/api/comment', {
+        id: id,
+        content: comment,
+        commentId: commentId
+    }, {
+        headers: {
+            requestUser: user
+        }
+    })
+}
 
 
 const Comment = (prop: { id: number, comments: Comment[] }) => {
     const { data:session } = useSession();
     // const [newComment, setNewComment] = useState<string>("");
-    // const [editComment, setEditComment] = useState<string>("");
-    // const [replyComment, setReplyComment] = useState<string>("");
-    // const [replyCommentFor, setReplyCommentFor] = useState<number | null>(null);
-    // const [editCommentMode, setEditCommentMode] = useState<number | null>(null);
+    const [editComment, setEditComment] = useState<string>("");
+    const [editCommentMode, setEditCommentMode] = useState<number | null>(null);
+
+    const handleEditChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        setEditComment(event.target.value);
+    };
+
+    const deleteCommentMutation = useMutation(deleteComment, {
+        onSuccess: () => {
+            window.location.reload();
+        },
+        onError: (error: AxiosError) => {
+            console.error("Delete request failed:", error.response?.data || error.message);
+        }
+    })
+
+    const updateCommentMutation = useMutation(updateComment, {
+        onSuccess: () => {
+            window.location.reload();
+        },
+        onError: (error: AxiosError) => {
+            console.error("Delete request failed:", error.response?.data || error.message);
+        }
+    })
+
+    
+
+    const handleDelete = (commentId: number) => {
+        console.log(prop.id);
+        if (session?.user?.email) {
+            deleteCommentMutation.mutate({ id: prop.id, user: String(session.user.name), commentId: commentId });
+        }
+    };
+
+    const handleUpdate = ({comment, commentId} : {comment: string, commentId: number}) => {
+        if (session?.user?.email) {
+            updateCommentMutation.mutate({id: prop.id, user: String(session.user.name), commentId: commentId, comment: comment});
+        }
+    }
 
     
     return(
@@ -19,8 +80,7 @@ const Comment = (prop: { id: number, comments: Comment[] }) => {
                 <p className="text-center">등록된 댓글이 없습니다.</p>
             ) : (
                 <>{prop.comments.map((comment) => (
-
-                        <li key={comment.id} className="border border-gray-300 p-4 list-none rounded-md w-1/3">
+                        <li key={comment.id} className="border border-gray-300 p-4 list-none rounded-md w-[500px]">
                             <div className="flex justify-between items-center">
                                 <div>
                                     <span className="font-semibold">{comment.posteduser}</span>
@@ -29,13 +89,17 @@ const Comment = (prop: { id: number, comments: Comment[] }) => {
                                 {comment.posteduser === session?.user?.name && (
                                     <div className="flex">
                                         {/* 수정 버튼 클릭 시 editCommentMode 상태를 해당 댓글의 ID로 설정 */}
-                                        <button className="px-3 py-1 text-sm">수정</button>
-                                        <button className="px-3 py-1 text-sm">삭제</button>
+                                        <button className="px-3 py-1 text-sm" onClick={() => 
+                                            {
+                                                setEditCommentMode(comment.id);
+                                                setEditComment(comment.content);
+                                            }}>수정</button>
+                                        <button className="px-3 py-1 text-sm" onClick={() => handleDelete(comment.id)}>삭제</button>
                                     </div>
                                 )}
                             </div>
                             
-                            {/* {(editCommentMode === comment.id) ? (
+                            {(editCommentMode === comment.id) ? (
                                 <div>
                                     <textarea
                                         value={editComment}
@@ -43,9 +107,18 @@ const Comment = (prop: { id: number, comments: Comment[] }) => {
                                         placeholder="댓글을 입력하세요..."
                                         className="mt-4 p-2 border border-gray-300 rounded-md w-full"
                                     />
-                                    <button onClick={() => updateComment(comment)} className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">수정 완료</button>
+                                    <button 
+                                        onClick={() => handleUpdate({ comment: editComment, commentId: comment.id })} 
+                                        className="px-3 py-1 text-sm"
+                                    >
+                                        완료
+                                    </button>
+                                    <button onClick={() => {
+                                        setEditCommentMode(null); // 수정 모드 취소
+                                        setEditComment(""); // 상태 초기화 (선택 사항)
+                                    }} className="px-3 py-1 text-sm">취소</button>
                                 </div>
-                            ) : ( */}
+                            ) : (
                                 <p className="mt-2 pb-4">
                                     {comment.content && comment.content.split('§').map((line, index) => (
                                         <React.Fragment key={index}>
@@ -54,47 +127,9 @@ const Comment = (prop: { id: number, comments: Comment[] }) => {
                                         </React.Fragment>
                                     ))}
                                 </p>
-                            {/* )} */}
-
-                            {/*  <button className="px-3 py-1 text-sm border-2 border-gray-100 m-4" onClick={() => setReplyCommentFor(comment.commentid)}>답글</button>
-
-                            {replyCommentFor === comment.id && (
-                                <div className="border border-gray-300 p-4 rounded-md">
-                                    <textarea
-                                        value={replyComment}
-                                        onChange={handleReplyInputChange}
-                                        placeholder="답변을 입력하세요..."
-                                        className="mt-4 p-2 border border-gray-300 rounded-md w-full"
-                                    />
-                                    <button onClick={handleSubmit} className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">답변 추가</button>
-                                </div>
                             )}
 
-
-                            {comments.filter(isChildComment).map((childComment) => (
-                                <div key={childComment.commentid} className="border border-gray-300 p-4 rounded-md ml-8">
-                                    <div className="flex justify-between items-center">
-                                        <div>
-                                            <span className="font-semibold">{childComment.username}</span>
-                                            <span className="text-gray-500 text-sm ml-2">{childComment.datetime[0] + "." + childComment.datetime[1] + "." + childComment.datetime[2] + ". " + childComment.datetime[3] + ":" + childComment.datetime[4]}</span>
-                                        </div>
-                                        {childComment.user === session?.user?.name && (
-                                            <div className="flex">
-                                                <button className="px-3 py-1 text-sm">수정</button>
-                                                <button className="px-3 py-1 text-sm" onClick={() => deleteComment(childComment.commentid, childComment.username)}>삭제</button>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <p className="mt-2">
-                                        {childComment.content && childComment.content.split('§').map((line, index) => (
-                                            <React.Fragment key={index}>
-                                            {line}
-                                            <br />
-                                            </React.Fragment>
-                                        ))}
-                                    </p>
-                                </div>
-                            ))} */}
+                            
                         </li>
                 ))}</>
             )}

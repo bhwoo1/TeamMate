@@ -1,14 +1,11 @@
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import React, { FormEvent, useState } from "react";
-
 
 
 const CommentForm = (prop: {id: number}) => {
     const [content, setContent] = useState<string>("");
     const {data: session} = useSession();
-    const router = useRouter();
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -23,7 +20,7 @@ const CommentForm = (prop: {id: number}) => {
     
             console.log(response);
             alert('등록되었습니다.');
-            router.push('/board');
+            window.location.reload();
         } catch (err) {
             console.log(err);
             alert('등록에 실패하였습니다.');
