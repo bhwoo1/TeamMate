@@ -32,7 +32,6 @@ const updateComment = async ({id, user, commentId, comment}: {id: number; user:s
 
 const Comment = (prop: { id: number, comments: Comment[] }) => {
     const { data:session } = useSession();
-    // const [newComment, setNewComment] = useState<string>("");
     const [editComment, setEditComment] = useState<string>("");
     const [editCommentMode, setEditCommentMode] = useState<number | null>(null);
 
