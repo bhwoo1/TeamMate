@@ -28,10 +28,17 @@ const CommentForm = (prop: {id: number}) => {
     }
 
     return(
-        <form onSubmit={handleSubmit}>
-            <textarea id="content" name="content" value={content} onChange={(e) => setContent(e.target.value)}/>
-            <button type="submit">등록</button>
-        </form>
+        <div className="">
+            <div className="border border-gray-300">
+                <p>댓글 쓰기</p>
+            </div>
+            <form onSubmit={handleSubmit} className="flex flex-col">
+                <textarea id="content" name="content" className="p-2 w-[500px] border border-gray-300" placeholder="댓글 내용을 입력해주세요." value={content} onChange={(e) => setContent(e.target.value)}/>
+                <div className="flex justify-end">
+                    <button type="submit" className="bg-blue-500 w-1/5 m-2 mr-0 p-2 text-white text-sm font-bold">댓글 등록</button>
+                </div>
+            </form>
+        </div>
     );
 }
 

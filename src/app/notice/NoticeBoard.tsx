@@ -47,12 +47,12 @@ const NoticeBoard = () => {
                     </thead>
                     <tbody>
                         
-                        {noticeArr.map((notice, index) => (
+                        {noticeArr.map((notice) => (
                                 <tr key={notice.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => noticeClick(notice.id)}>
-                                    <td className="border px-4 py-2 text-center">{index + 1}</td>
+                                    <td className="border px-4 py-2 text-center">{notice.id}</td>
                                     <td className="border px-4 py-2">{notice.title}</td>
                                     <td className="border px-4 py-2">{notice.postedadmin}</td>
-                                    <td className="border px-4 py-2 text-center">{notice.createdAt}</td>
+                                    <td className="border px-4 py-2 text-center">{notice.createdAt.split('T')[0]}</td>
                                 </tr>
                         ))}
                     </tbody>

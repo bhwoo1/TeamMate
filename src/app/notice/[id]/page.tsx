@@ -3,6 +3,7 @@
 import { ReceivedNotice } from "@/app/Type";
 import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useMutation, useQuery } from "react-query";
@@ -53,11 +54,27 @@ const NoticePost = (props: {params: {id: number}}) => {
 
     return(
         <main className="flex min-h-screen flex-col items-center justify-center p-20">
-            <p>{notice?.title}</p>
-            <p>{notice?.content}</p>
-            <p>{notice?.postedadmin}</p>
-            <p>{notice?.createdAt}</p>
-            <button onClick={handleDelete}>삭제</button>
+            <div className="flex flex-col border-2 border-gray-300 w-[500px] rounded-md">
+                <div className="flex flex-row justify-between">
+                    <p className="text-wrap px-3">{notice?.title}</p>
+                    {notice?.postedadmin === session?.user?.name &&
+                        <div className="flex flex-row justify-between w-[100px] text-sm text-gray-500">
+                            <button className="flex-1">수정</button>
+                            <button className="flex-1" onClick={handleDelete}>삭제</button>
+                        </div>
+                    }
+                </div>
+                <div className="flex flex-row border-t-2 border-gray-300 justify-between">
+                    <p className="flex-1 text-left px-3">{notice?.postedadmin}</p>
+                    <p className="flex-1 text-right px-3 text-sm text-gray-500">{notice?.createdAt.split('T')[0]}</p>
+                </div>
+            </div>
+
+            <p className="w-[500px] text-wrap pt-4 pb-20 text-left">{notice?.content}</p>
+
+            <Link href="/notice" className="border rounded-md border-gray-300">
+                <button className="mx-4 my-2">목록</button>
+            </Link>
         </ main>
     );
 }

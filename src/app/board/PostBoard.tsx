@@ -46,12 +46,12 @@ const PostBoard = () => {
                 </thead>
                 <tbody>
 
-                    {postArr.map((post, index) => (
+                    {postArr.map((post) => (
                         <tr key={post.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => postClick(post.id)}>
-                            <td className="border px-4 py-2 text-center">{index + 1}</td>
+                            <td className="border px-4 py-2 text-center">{post.id}</td>
                             <td className="border px-4 py-2">{post.title}</td>
                             <td className="border px-4 py-2">{post.posteduser}</td>
-                            <td className="border px-4 py-2 text-center">{post.createdAt}</td>
+                            <td className="border px-4 py-2 text-center">{post.createdAt.split('T')[0]}</td>
                         </tr>
                     ))}
 

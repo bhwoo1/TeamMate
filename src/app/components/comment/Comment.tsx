@@ -79,7 +79,7 @@ const Comment = (prop: { id: number, comments: Comment[] }) => {
                 <p className="text-center">등록된 댓글이 없습니다.</p>
             ) : (
                 <>{prop.comments.map((comment) => (
-                        <li key={comment.id} className="border border-gray-300 p-4 list-none rounded-md w-[500px]">
+                        <li key={comment.id} className="border border-gray-300 p-4 list-none w-[500px]">
                             <div className="flex justify-between items-center">
                                 <div>
                                     <span className="font-semibold">{comment.posteduser}</span>
@@ -104,7 +104,7 @@ const Comment = (prop: { id: number, comments: Comment[] }) => {
                                         value={editComment}
                                         onChange={handleEditChange}
                                         placeholder="댓글을 입력하세요..."
-                                        className="mt-4 p-2 border border-gray-300 rounded-md w-full"
+                                        className="mt-4 p-2 border border-gray-300 w-full"
                                     />
                                     <button 
                                         onClick={() => handleUpdate({ comment: editComment, commentId: comment.id })} 
@@ -132,7 +132,9 @@ const Comment = (prop: { id: number, comments: Comment[] }) => {
                         </li>
                 ))}</>
             )}
-            <CommentForm id={prop.id} />
+            <div className="pt-8">
+                <CommentForm id={prop.id} />
+            </div>
         </div>
     );
 }

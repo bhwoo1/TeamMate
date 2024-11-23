@@ -5,7 +5,8 @@ import PostBoard from "./PostBoard";
 const BoardPage = () => {
   return (
     <AuthPage>
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex flex-col justify-center items-center h-screen">
+        <p className="text-2xl font-bold">자유게시판</p>
         <PostBoard />
       </div>
     </AuthPage>
