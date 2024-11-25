@@ -53,7 +53,7 @@ const Comment = (prop: { id: number, comments: Comment[] }) => {
             window.location.reload();
         },
         onError: (error: AxiosError) => {
-            console.error("Delete request failed:", error.response?.data || error.message);
+            console.error("Update request failed:", error.response?.data || error.message);
         }
     })
 

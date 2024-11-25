@@ -3,15 +3,30 @@
 import AdminPage from "@/app/components/AdminPage";
 import { Notice } from "@/app/Type";
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { FormEvent, useState } from "react"
+import { useMutation } from "react-query";
 
 const initialNotice:Notice = {
     title: "",
     content: "",
 }
+
+const submitNotice = async ({title, content, postedadmin, requestUser}: {title: string; content:string, postedadmin: string, requestUser:string}) => {
+    await axios.post('/api/notice', {
+        action: "create",
+        title: title,
+        content: content,
+        postedadmin: postedadmin
+    }, {
+        headers: {
+            requestUser: requestUser
+        }
+    })
+}
+
 
 const NoticeCreatePage = () => {
     const [notice, setNotice] = useState<Notice>(initialNotice);
@@ -20,27 +35,45 @@ const NoticeCreatePage = () => {
 
 
 
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
+    // const handleSubmit = async (e: FormEvent) => {
+    //     e.preventDefault();
     
-        try {
-            const response = await axios.post('/api/notice', {
-                action: 'create', // action 필드를 추가합니다.
-                title: notice.title,
-                content: notice.content,
-                postedadmin: String(session?.user?.name)
-            }, {
-                headers: {
-                    "requestUser": String(session?.user?.email)
-                }
-            });
+    //     try {
+    //         const response = await axios.post('/api/notice', {
+    //             action: 'create', // action 필드를 추가합니다.
+    //             title: notice.title,
+    //             content: notice.content,
+    //             postedadmin: String(session?.user?.name)
+    //         }, {
+    //             headers: {
+    //                 "requestUser": String(session?.user?.email)
+    //             }
+    //         });
     
-            console.log(response);
+    //         console.log(response);
+    //         alert('등록되었습니다.');
+    //         router.push('/notice');
+    //     } catch (err) {
+    //         console.log(err);
+    //         alert('등록에 실패하였습니다.');
+    //     }
+    // }
+
+    const submitNoticeMutation = useMutation(submitNotice, {
+        onSuccess: () => {
             alert('등록되었습니다.');
             router.push('/notice');
-        } catch (err) {
-            console.log(err);
-            alert('등록에 실패하였습니다.');
+        },
+        onError: (error: AxiosError) => {
+            console.error("Delete request failed:", error.response?.data || error.message);
+        }
+    })
+
+    const handleSubmit = ({e, title, content} : {e: FormEvent; title: string, content: string}) => {
+        e.preventDefault();
+
+        if (session?.user?.email) {
+            submitNoticeMutation.mutate({title: title, content: content, postedadmin: String(session.user.name), requestUser: String(session.user.email)});
         }
     }
 
@@ -49,7 +82,7 @@ const NoticeCreatePage = () => {
     return(
         <AdminPage>
             <main className="flex min-h-screen flex-col items-center justify-center p-20">
-                <form onSubmit={handleSubmit} className="border border-gray-300 w-[500px]">
+                <form onSubmit={(e) => handleSubmit({ e, title: notice.title, content: notice.content})} className="border border-gray-300 w-[500px]">
                     <div className="border-b border-gray-300 flex flex-row justify-between">
                         <p className="text-l m-2">쓰기</p>
                         <div className="m-2 text-sm text-gray-500 flex flex-row justify-end text-sm text-gray-500">
