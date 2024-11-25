@@ -57,7 +57,7 @@ const PostPage = (props: {params: {id: number}}) => {
 
       const handleDelete = () => {
         if (session?.user?.email) {
-            deleteNoticeMutation.mutate({ id: props.params.id, user: String(session.user.name) });
+            deleteNoticeMutation.mutate({ id: Number(props.params.id), user: String(session.user.name) });
         }
     };
 

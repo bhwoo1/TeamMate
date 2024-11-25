@@ -108,6 +108,13 @@ export async function DELETE(req: Request) {
 
 
         if (post.posteduser === requestUser) {
+            // 댓글 삭제
+            await prisma.comment.deleteMany({
+                where: {
+                    postid: body.id,
+                },
+            });
+
             const deletedPost = await prisma.post.delete({
                 where: {id: postId}
             });
