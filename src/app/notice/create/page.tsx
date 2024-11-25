@@ -33,32 +33,6 @@ const NoticeCreatePage = () => {
     const {data: session} = useSession();
     const router = useRouter();
 
-
-
-    // const handleSubmit = async (e: FormEvent) => {
-    //     e.preventDefault();
-    
-    //     try {
-    //         const response = await axios.post('/api/notice', {
-    //             action: 'create', // action 필드를 추가합니다.
-    //             title: notice.title,
-    //             content: notice.content,
-    //             postedadmin: String(session?.user?.name)
-    //         }, {
-    //             headers: {
-    //                 "requestUser": String(session?.user?.email)
-    //             }
-    //         });
-    
-    //         console.log(response);
-    //         alert('등록되었습니다.');
-    //         router.push('/notice');
-    //     } catch (err) {
-    //         console.log(err);
-    //         alert('등록에 실패하였습니다.');
-    //     }
-    // }
-
     const submitNoticeMutation = useMutation(submitNotice, {
         onSuccess: () => {
             alert('등록되었습니다.');
@@ -67,7 +41,7 @@ const NoticeCreatePage = () => {
         onError: (error: AxiosError) => {
             console.error("Delete request failed:", error.response?.data || error.message);
         }
-    })
+    });
 
     const handleSubmit = ({e, title, content} : {e: FormEvent; title: string, content: string}) => {
         e.preventDefault();

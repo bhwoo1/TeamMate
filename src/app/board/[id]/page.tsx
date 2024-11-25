@@ -68,7 +68,7 @@ const PostPage = (props: {params: {id: number}}) => {
                     <p className="text-wrap px-3">{post?.title}</p>
                     {post?.posteduser === session?.user?.name &&
                         <div className="flex flex-row justify-between w-[100px] text-sm text-gray-500">
-                            <button className="flex-1">수정</button>
+                            <button className="flex-1" onClick={() => router.push(`/board/edit/${props.params.id}`)}>수정</button>
                             <button className="flex-1" onClick={handleDelete}>삭제</button>
                         </div>
                     }

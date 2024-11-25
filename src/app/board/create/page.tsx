@@ -2,49 +2,57 @@
 
 import AuthPage from "@/app/components/AuthPage";
 import { Post } from "@/app/Type";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { FormEvent, useState } from "react"
+import { useMutation } from "react-query";
 
 const initialPost:Post = {
     title: "",
     content: ""
 };
 
+const submitPost = async ({title, content, posteduser}: {title: string; content:string, posteduser: string}) => {
+    await axios.post('/api/post', {
+        action: "create",
+        title: title,
+        content: content,
+        posteduser: posteduser
+    })
+}
 const PostCreatePage = () => {
     const [post, setPost] = useState<Post>(initialPost);
     const {data: session} = useSession();
     const router = useRouter();
 
 
-
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-    
-        try {
-            const response = await axios.post('/api/post', {
-                action: 'create', // action 필드를 추가합니다.
-                title: post.title,
-                content: post.content,
-                posteduser: String(session?.user?.name)
-            });
-    
-            console.log(response);
+    const submitPostMutation = useMutation(submitPost, {
+        onSuccess: () => {
             alert('등록되었습니다.');
             router.push('/board');
-        } catch (err) {
-            console.log(err);
-            alert('등록에 실패하였습니다.');
+        },
+        onError: (error: AxiosError) => {
+            console.error("Delete request failed:", error.response?.data || error.message);
+        }
+    });
+
+    const handleSubmit = ({e, title, content} : {e: FormEvent; title: string, content: string}) => {
+        e.preventDefault();
+
+        if (session?.user?.email) {
+            submitPostMutation.mutate({title: title, content: content, posteduser: String(session.user.name)});
         }
     }
+
+
 
 
 
     return(
         <AuthPage>
             <main className="flex min-h-screen flex-col items-center justify-center p-20">
-                <form onSubmit={handleSubmit} className="border border-gray-300 w-[500px]">
+                <form onSubmit={(e) => handleSubmit({ e, title: post.title, content: post.content})} className="border border-gray-300 w-[500px]">
                     <div className="border-b border-gray-300 flex flex-row justify-between">
                         <p className="text-l m-2">쓰기</p>
                         <div className="m-2 text-sm text-gray-500 flex flex-row justify-end text-sm text-gray-500">
