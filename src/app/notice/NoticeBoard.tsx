@@ -11,7 +11,7 @@ import { useQuery } from "react-query";
 import { userRoleStore } from "../zustand/store";
 
 const fetchNotices = async () => {
-    const response = await axios.get("/api/notice?action=findMany");
+    const response = await axios.get("/api/notice");
     return response.data;
 }
 

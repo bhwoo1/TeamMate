@@ -27,3 +27,15 @@ export interface ReceivedPost extends Post {
     createdAt: string;
     comments: Comment[];
 }
+
+export interface Player {
+    id: number;
+    backnumber: number;
+    name: string;
+    profileimage: string;
+    position: string;
+    birthdate: string;
+    injury: boolean;
+    injuredpart: string;
+    recoveryperiod: string
+}

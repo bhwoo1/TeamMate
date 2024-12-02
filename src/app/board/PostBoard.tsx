@@ -9,7 +9,7 @@ import { FaPencilAlt } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
 const fetchPost = async () => {
-    const response = await axios.get("/api/post?action=findMany");
+    const response = await axios.get("/api/post");
     return response.data;
 }
 
