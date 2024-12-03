@@ -32,7 +32,7 @@ export interface Player {
     id: number;
     backnumber: number;
     name: string;
-    profileimage: string;
+    profileimage: string | File;
     position: string;
     birthdate: string;
     injury: boolean;
