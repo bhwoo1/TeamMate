@@ -9,4 +9,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: "/auth/signin",
   },
+  session: {
+    strategy: "database", // Prisma를 사용하여 세션 저장
+  },
+  secret: process.env.NEXTAUTH_SECRET,
 })

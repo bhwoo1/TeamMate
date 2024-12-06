@@ -24,8 +24,6 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  role      String    @default("user")  // Global role
-  approved  Boolean   @default(false)
   teams     TeamUser[]
  
   createdAt DateTime @default(now())
