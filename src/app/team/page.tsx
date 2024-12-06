@@ -1,11 +1,6 @@
-// import AuthPage from "../AuthPage"
-
 const TeamPage = () => {
     return(
-        // <AuthPage>
-        //     <></>
-        // </AuthPage>
-        <>팀 페이지</>
+            <>팀 페이지</>
     );
 }
 

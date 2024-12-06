@@ -1,50 +1,64 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+// import { NextRequest, NextResponse } from "next/server";
+// import { auth } from "./app/auth";
+// // import { parse } from "cookie"; // 쿠키 파싱 라이브러리
+// // import { prisma } from "./app/prisma";
+
+
+// export async function middleware(request: NextRequest) {
+//   const session = await auth();
+
+  
+//   // // 쿠키에서 세션 토큰을 추출합니다.
+//   // const cookies = parse(request.headers.get("cookie") || "");
+//   // const sessionToken = cookies["next-auth.session-token"]; // 세션 토큰 이름을 확인
+
+//   // console.log("Session Token:", sessionToken); // 디버깅을 위해 세션 토큰 확인
+
+//   // if (!sessionToken) {
+//   //   // 세션 토큰이 없으면 로그인 페이지로 리디렉트
+//   //   return NextResponse.redirect(new URL("/login", request.url));
+//   // }
+
+//   // // Prisma로 세션을 확인합니다.
+//   // const session = await prisma.session.findUnique({
+//   //   where: {
+//   //     sessionToken: sessionToken, // 세션 토큰을 기준으로 세션 조회
+//   //   },
+//   // });
+
+//   // console.log("Session:", session); // 디버깅을 위해 세션 정보를 확인합니다.
+
+//   // if (!session) {
+//   //   // 세션이 없으면 로그인 페이지로 리디렉트
+//   //   return NextResponse.redirect(new URL("/login", request.url));
+//   // }
+
+//   // 세션이 유효하면 요청을 계속 처리
+//   return NextResponse.next();
+// }
+
+// export const config = {
+//   matcher: ["/team/:path*", "/search/:path*"], // /team, /search 경로에 대해서만 미들웨어 적용
+// };
+
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "./app/auth";
+
 
 export async function middleware(request: NextRequest) {
-  console.log('Middleware executed'); // 미들웨어가 실행되는지 확인
-  const token = await getToken({ req: request, secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET });
-  const { pathname } = request.nextUrl;
+  console.log("middleware")
+  // Auth.js로 세션 정보 가져오기
+  const session = await auth();
 
-  console.log('Token:', token); // 토큰을 확인합니다.
-
-  // 로그인 페이지로 접근하면 토큰이 있으면 홈으로 리다이렉트
-  if (pathname === '/login') {
-    if (token) {
-      return NextResponse.redirect(new URL('/', request.url));
-    }
-    return NextResponse.next();
+  if (!session) {
+    // 세션이 없다면 로그인 페이지로 리디렉션
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // 로그인되지 않은 상태로 /team이나 /search에 접근하면 로그인 페이지로 리다이렉트
-  if (!token) {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-
+  // 세션이 유효하다면 요청을 계속 처리
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/team/:path*', '/search/:path*'],  // 미들웨어를 /team, /search 경로에만 적용
+  matcher: ["/team/:path*", "/search/:path*"], // /team, /search 경로에 대해서만 미들웨어 적용
 };
-// import { NextRequest, NextResponse } from "next/server";
-
-// export function middleware(request: NextRequest) {
-//   return NextResponse.redirect(new URL("/login", request.url));
-// }
-
-// export const config = {
-//   matcher: ["/team"],
-// };
-
-// import { NextRequest, NextResponse } from 'next/server';
-
-// export function middleware(req: NextRequest) {
-//   const { pathname } = req.nextUrl;
-
-//   if (!req.cookies.get('auth') && pathname.startsWith('/team')) {
-//     return NextResponse.redirect(new URL('/home', req.url));
-//   }
-
-//   return NextResponse.next();
-// }
