@@ -76,7 +76,8 @@ model VerificationToken {
 
 model Team {
   id          Int       @id @default(autoincrement())
-  name        String
+  teamName    String
+  teamLogo    String
   description String
   posts       Post[]
   squad       Squad[]   @relation("TeamSquad")

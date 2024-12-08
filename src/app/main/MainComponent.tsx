@@ -8,6 +8,7 @@ import SearchBar from "../search/SearchBar";
 const MainComponent = () => {
     const {status} = useSession();
 
+
     return(
         <div className="flex items-center justify-center">
             {status === 'authenticated' ? 

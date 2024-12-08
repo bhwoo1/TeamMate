@@ -8,5 +8,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     // signOut 페이지를 추가하여 로그아웃 후 세션 삭제
     signOut: "/auth/signout", 
   },
-  
+  callbacks: {
+    
+  }
 });
