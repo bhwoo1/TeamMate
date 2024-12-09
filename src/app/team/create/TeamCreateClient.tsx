@@ -1,6 +1,6 @@
 "use client"
 
-import { Team } from "@/app/Type";
+import { areas, Team } from "@/app/Type";
 import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { FormEvent, useState } from "react";
@@ -9,6 +9,7 @@ import { useMutation } from "react-query";
 const initialTeam: Team = {
     teamName: "",
     teamLogo: "",
+    location: "",
     description: ""
 }
 
@@ -16,6 +17,7 @@ const submitTeam = async ({team, user} : {team: Team, user: string}) => {
     await axios.post("/api/team", {
         teamName: team.teamName,
         description: team.description,
+        location: team.location,
         teamLogo: team.teamLogo
     }, {
         headers: {
@@ -48,6 +50,8 @@ const uploadFile = async (file: File) => {
 const TeamCreateClient = () => {
     const [newTeam, setNewTeam] = useState<Team>(initialTeam);
     const {data: session} = useSession();
+    const [selectedArea, setSelectedArea] = useState<string>('');
+    const [selectedSubArea, setSelectedSubArea] = useState<string>('');
 
     const submitTeamMutation = useMutation(submitTeam, {
         onSuccess: () => {
@@ -92,6 +96,16 @@ const TeamCreateClient = () => {
             alert("파일을 업로드해야 합니다.");
         }
     }
+
+    const handleAreaChange = (area: string) => {
+        setSelectedArea(area);
+        setSelectedSubArea(''); // 지역이 바뀔 때 기초자치단체 초기화
+    };
+
+    const handleSubAreaChange = (subArea: string) => {
+        setSelectedSubArea(subArea);
+        setNewTeam({...newTeam, location: `${selectedArea} ${selectedSubArea}`});
+    };
 
     return(
         <form
@@ -141,6 +155,34 @@ const TeamCreateClient = () => {
                     placeholder="팀에 대한 설명을 입력하세요."
                 />
             </div>
+
+            {/* 팀 지역 입력 */}
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                지역
+            </label>
+            <select
+                className="text-gray-500 text-sm ml-2"
+                onChange={(e) => handleAreaChange(e.target.value)}
+                value={selectedArea}
+            >
+                <option value="" disabled>광역자치단체</option>
+                {Object.keys(areas).map(area => (
+                    <option key={area} value={area}>{area}</option>
+                ))}
+            </select>
+            {selectedArea && (
+                    <select
+                        className="text-gray-500 text-sm ml-2"
+                        onChange={(e) => handleSubAreaChange(e.target.value)}
+                        value={selectedSubArea}
+                    >
+                        <option value="" disabled>기초자치단체</option>
+                        {areas[selectedArea].map(subArea => (
+                            <option key={subArea} value={subArea}>{subArea}</option>
+                        ))}
+                    </select>
+            )}
+
 
             {/* 제출 버튼 */}
             <div className="flex justify-end">

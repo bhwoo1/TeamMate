@@ -79,6 +79,7 @@ model Team {
   teamName    String
   teamLogo    String
   description String
+  location     String
   posts       Post[]
   squad       Squad[]   @relation("TeamSquad")
   users       TeamUser[]
