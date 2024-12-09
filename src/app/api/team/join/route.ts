@@ -35,6 +35,7 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
+    const body = await req.json();
     const requestUser = req.headers.get("requestUser");
   
     if (!requestUser) {
@@ -48,6 +49,9 @@ export async function GET(req: Request) {
     try {
       // 유저의 팀 가입 요청 상태 조회
       const joinRequests = await prisma.teamJoinRequest.findMany({
+        where: {
+          teamId: body.teamId
+        },
         include: { team: true }, // 팀 정보 포함
       });
   
