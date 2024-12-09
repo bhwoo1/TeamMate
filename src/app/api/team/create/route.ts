@@ -14,6 +14,7 @@ export async function POST(req: Request) {
             data: {
                 teamName: body.teamName,
                 teamLogo: body.teamLogo,
+                location: body.location,
                 description: body.description
             }
         });
