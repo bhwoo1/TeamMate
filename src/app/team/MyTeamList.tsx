@@ -41,12 +41,15 @@ const MyTeamList = () => {
                 </>
             ) : (
                 <>
-                    {myTeamArr.map((team) => (
-                        <div key={team.id}>
-                            <p>{team.teamName}</p>
-                        </div>
-                    ))}
+                        {myTeamArr.map((team) => (
+                            <div key={team.id}>
+                                <Link href={`/team/${team.id}`}>
+                                    <p>{team.teamName}</p>
+                                </Link>
+                            </div>
+                        ))}
                 </>
+
             )}
         </div>
     );

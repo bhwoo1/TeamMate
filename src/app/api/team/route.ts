@@ -32,7 +32,7 @@ export async function GET(req: Request) {
             return NextResponse.json(teams, { status: 200 });
         } else {
             // 요청 유저가 없으면 모든 팀을 조회
-            const teams = await prisma.post.findMany({
+            const teams = await prisma.team.findMany({
                 orderBy: { createdAt: "desc" }
             });
 
