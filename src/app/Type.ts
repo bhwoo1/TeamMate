@@ -1,8 +1,86 @@
+export interface User {
+    id: string;
+    name: string;
+    image: string;
+ }
+
 export interface Team {
     teamName: string,
     teamLogo: string | File,
     location: string,
     description: string,
+}
+
+export interface ReceivedTeam extends Team {
+    id: number;
+    posts: Post[];
+    squad: Squad[];
+    users: TeamUser[];
+    comments: Comment[];
+    joinRequests: TeamJoinRequest[];
+    createdAt: Date;
+}
+
+export interface TeamUser {
+    id: number;
+    userId: string;
+    teamId: number;
+    role: "member" | "admin"; // role의 범위를 명시적으로 제한
+    user: User;
+    team: Team;
+}
+
+export interface TeamJoinRequest {
+    id: number;
+    userId: string;
+    teamId: number;
+    status: "pending" | "approved" | "rejected"; // 상태를 명시적으로 제한
+    user: User;
+    team: Team;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface Post {
+    title: string;
+    content: string;
+    isNotice: boolean;
+}
+
+export interface ReceivedPost extends Post {
+    id: number;
+    comments: Comment[];
+    teamId: number;
+    team: Team;
+    createdAt: Date;
+}
+
+export interface Comment {
+    id: number;
+    postid: number;
+    content: string;
+    posteduser: string;
+    createdAt: Date;
+    teamId: number;
+    post: Post;
+    team: Team;
+}
+
+export interface Squad {
+    backnumber: number;
+    profileimage: string;
+    name: string;
+    position: string;
+    birthdate: Date;
+    injury: boolean;
+    injuredpart: string;
+    recoveryperiod: string;
+}
+
+export interface ReceivedSquad extends Squad {
+    id: number;
+    teamId: number;
+    team: Team;
 }
 
 export const areas: { [key: string]: string[] } = {
