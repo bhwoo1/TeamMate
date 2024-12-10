@@ -86,6 +86,8 @@ model Team {
   users       TeamUser[]
   comments    Comment[]
   joinRequests TeamJoinRequest[] // 팀에 대한 가입 요청들
+
+  createdAt DateTime @default(now())
 }
 
 model TeamUser {
@@ -118,6 +120,8 @@ model Post {
   comments Comment[]
   teamId   Int
   Team     Team     @relation(fields: [teamId], references: [id])
+
+  createdAt DateTime @default(now())
 }
 
 model Comment {
