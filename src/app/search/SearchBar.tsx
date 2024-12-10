@@ -22,6 +22,7 @@ const SearchBar = () => {
     const submitKeywordMutation = useMutation(submitKeyword, {
         onSuccess: (data) => {
             setSearchResults(data);
+            router.push('/search/result');
         },
         onError: (error: AxiosError) => {
             console.error("Search request failed:", error.response?.data || error.message);
