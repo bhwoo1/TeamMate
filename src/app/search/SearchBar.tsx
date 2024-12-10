@@ -6,10 +6,9 @@ import { useMutation } from "react-query";
 import { useSearchTeamStore } from "../zustand/store";
 
 const submitKeyword = async ({ keyword }: { keyword: string }) => {
+    console.log(keyword);
     const response = await axios.post("/api/search/team", {
-        data: {
-            keyword: keyword
-        }
+        keyword: keyword
     });
     return response.data;
 }
@@ -25,7 +24,8 @@ const SearchBar = () => {
             router.push('/search/result');
         },
         onError: (error: AxiosError) => {
-            console.error("Search request failed:", error.response?.data || error.message);
+            alert('검색에 실패했습니다!');
+            console.log("Search request failed:", error.message);
         }
     })
 

@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       }
 
     try {
-        const teams = prisma.team.findMany({
+        const teams = await prisma.team.findMany({
             where: {
                 teamName: {
                     contains: keyword,
@@ -18,7 +18,16 @@ export async function POST(req: Request) {
             }
         });
 
-        return NextResponse.json(teams);
+        console.log(teams);
+
+        if (teams.length) {
+            return NextResponse.json(teams);
+        }
+        else {
+            return NextResponse.json({ error: "Failed to search"}, { status: 500 });
+        }
+
+        
     } catch (error) {
         console.error(error);
         return NextResponse.json({ error: "Failed to search" }, { status: 500 });
