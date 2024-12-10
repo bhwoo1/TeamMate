@@ -4,6 +4,7 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import { ReceivedTeam } from "../Type";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 const fetchMyTeams = async (userId: string) => {
     if (!userId) {
@@ -18,9 +19,9 @@ const fetchMyTeams = async (userId: string) => {
 }
 
 const MyTeamList = () => {
-    const {data: session} = useSession();
-    const userId = String(session?.user?.id);
-    const {data: myTeamArr = [], isLoading, isError, error} = useQuery<ReceivedTeam[], Error>(
+    const { data: session } = useSession();
+    const userId = String(session?.user?.email);
+    const { data: myTeamArr = [], isLoading, isError, error } = useQuery<ReceivedTeam[], Error>(
         "myteamList",
         () => fetchMyTeams(userId),
         {
@@ -28,22 +29,23 @@ const MyTeamList = () => {
         }
     );
 
-    
-
     if (isLoading) return <p className="text-center">Loading...</p>;
     if (isError) return <p className="text-center">Error: {error.message}</p>;
 
-    return(
+    return (
         <div>
             {myTeamArr.length === 0 ? (
-                <p>가입한 팀이 없습니다.</p>
+                <>
+                    <p>가입한 팀이 없습니다.</p>
+                    <Link href={'/team/create'}><button>팀 생성</button></Link>
+                </>
             ) : (
                 <>
-                    {myTeamArr.map((team) => {
+                    {myTeamArr.map((team) => (
                         <div key={team.id}>
                             <p>{team.teamName}</p>
                         </div>
-                    })}
+                    ))}
                 </>
             )}
         </div>

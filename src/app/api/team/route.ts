@@ -8,9 +8,18 @@ export async function GET(req: Request) {
 
     try {
         if (requestUser) {
+            // 이메일로 실제 유저를 찾기
+            const user = await prisma.user.findUnique({
+                where: { email: requestUser },
+            });
+
+            if (!user) {
+                return NextResponse.json({ error: "User is not found" }, { status: 400 });
+            }
+
             const myTeams = await prisma.teamUser.findMany({
                 where: {
-                    userId: requestUser
+                    userId: user.id
                 },
                 include: {
                     team: true

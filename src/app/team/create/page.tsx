@@ -1,8 +1,11 @@
+import AuthPage from "@/app/AuthPage";
 import TeamCreateClient from "./TeamCreateClient";
 
 const TeamCreatePage = () => {
     return(
-        <TeamCreateClient />
+        <AuthPage>
+            <TeamCreateClient />
+        </AuthPage>
     );
 }
 

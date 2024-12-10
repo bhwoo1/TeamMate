@@ -22,36 +22,35 @@ model User {
   email         String?         @unique
   emailVerified DateTime?
   image         String?
-  accounts      Account[]
-  sessions      Session[]
-  teams         TeamUser[]
+  accounts      Account[]       // 여러 계정을 가질 수 있음
+  sessions      Session[]       // 세션
+  teams         TeamUser[]      // 유저가 속한 팀
   joinRequests  TeamJoinRequest[] // 유저의 팀 가입 요청
- 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
- 
+
 model Account {
-  id                       String  @id @default(cuid())
-  userId                   String  @unique
+  id                       String   @id @default(cuid())
+  userId                   String   // 유저와의 관계를 나타냄
   type                     String
   provider                 String
   providerAccountId        String
-  refresh_token            String? @db.Text
-  access_token             String? @db.Text
+  refresh_token            String?  @db.Text
+  access_token             String?  @db.Text
   expires_at               Int?
   token_type               String?
   scope                    String?
-  id_token                 String? @db.Text
+  id_token                 String?  @db.Text
   session_state            String?
   refresh_token_expires_in Int?
-  user                     User?   @relation(fields: [userId], references: [id])
- 
+  user                     User     @relation(fields: [userId], references: [id]) // User와 관계 설정
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
- 
-  @@unique([provider, providerAccountId])
-  @@index([userId])
+
+  @@unique([provider, providerAccountId]) // 동일한 provider 및 providerAccountId의 조합을 유일하게 만듬
+  @@index([userId]) // userId에 인덱스 추가
 }
  
 model Session {
@@ -80,11 +79,11 @@ model Team {
   teamName    String
   teamLogo    String
   description String
-  location     String
-  posts       Post[]
+  location    String
+  posts       Post[]    // 팀의 게시글
   squad       Squad[]   @relation("TeamSquad")
-  users       TeamUser[]
-  comments    Comment[]
+  users       TeamUser[] // 팀에 속한 유저
+  comments    Comment[]  // 팀의 댓글
   joinRequests TeamJoinRequest[] // 팀에 대한 가입 요청들
 
   createdAt DateTime @default(now())
@@ -92,11 +91,11 @@ model Team {
 
 model TeamUser {
   id         Int     @id @default(autoincrement())
-  userId     String  @unique
+  userId     String  // 이메일 대신 유저 id를 사용
   teamId     Int
   role       String  @default("member") // "member" or "admin"
   
-  user       User    @relation(fields: [userId], references: [id])
+  user       User    @relation(fields: [userId], references: [id]) // userId로 User와 관계 설정
   team       Team    @relation(fields: [teamId], references: [id])
 }
 

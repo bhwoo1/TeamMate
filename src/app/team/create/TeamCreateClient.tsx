@@ -13,8 +13,11 @@ const initialTeam: Team = {
     description: ""
 }
 
+
 const submitTeam = async ({team, user} : {team: Team, user: string}) => {
-    await axios.post("/api/team", {
+    console.log(team);
+
+    await axios.post("/api/team/create", {
         teamName: team.teamName,
         description: team.description,
         location: team.location,
@@ -58,7 +61,7 @@ const TeamCreateClient = () => {
             alert('등록되었습니다.');
         },
         onError: (error: AxiosError) => {
-            console.error("Delete request failed:", error.response?.data || error.message);
+            console.error("Submit request failed:", error.response?.data || error.message);
         }
     });
 
@@ -71,25 +74,33 @@ const TeamCreateClient = () => {
     const handleSubmit = async ({e, newTeam} : {e: FormEvent; newTeam: Team}) => {
         e.preventDefault();
 
+        console.log(newTeam);
+
         // 파일이 존재하고 File 객체인 경우, 파일 업로드를 먼저 진행
         if (newTeam.teamLogo && newTeam.teamLogo instanceof File) {
             try {
-            // 파일 업로드 후 URL을 얻은 후, 선수 등록을 진행
-            const fileData = await uploadMutation.mutateAsync(newTeam.teamLogo);
+                // 파일 업로드 후 URL을 얻은 후, 선수 등록을 진행
+                const fileData = await uploadMutation.mutateAsync(newTeam.teamLogo);
+                
+                // 업로드된 파일의 URL을 player 상태에 반영
+                setNewTeam((prev) => ({
+                    ...prev,
+                    teamLogo: fileData.url, // 파일 URL로 상태 업데이트
+                }));
+
+                console.log("등록 실행");
+
+                console.log(session);
+
+
             
-            // 업로드된 파일의 URL을 player 상태에 반영
-            setNewTeam((prev) => ({
-                ...prev,
-                teamLogo: fileData.url, // 파일 URL로 상태 업데이트
-            }));
-        
-            // 파일 업로드 후, 선수 등록을 실행
-            if (session?.user?.id) {
-                submitTeamMutation.mutate({ team: { ...newTeam, teamLogo: fileData.url }, user: String(session.user.email) });
-            }
+                // 파일 업로드 후, 팀 등록을 실행
+                if (session?.user?.email) {
+                    submitTeamMutation.mutate({ team: { ...newTeam, teamLogo: fileData.url }, user: String(session.user.email) });
+                }
             } catch (error) {
-            console.error("파일 업로드 실패:", error);
-            alert("파일 업로드에 실패했습니다. 다시 시도해 주세요.");
+                console.error("파일 업로드 실패:", error);
+                alert("파일 업로드에 실패했습니다. 다시 시도해 주세요.");
             }
         } else {
             // 파일이 없다면 등록 불가 알림
@@ -107,6 +118,7 @@ const TeamCreateClient = () => {
         setNewTeam({...newTeam, location: `${selectedArea} ${selectedSubArea}`});
     };
 
+
     return(
         <form
             onSubmit={(e) => handleSubmit({e, newTeam})}
@@ -121,8 +133,9 @@ const TeamCreateClient = () => {
                     id="name"
                     name="name"
                     value={newTeam.teamName}
+                    onChange={(e) => setNewTeam({ ...newTeam, teamName: e.target.value })}
                     className="mt-1 p-2 border w-full rounded"
-                    placeholder="선수 이름을 입력하세요."
+                    placeholder="팀 이름을 입력하세요."
                 />
             </div>
 
@@ -151,6 +164,7 @@ const TeamCreateClient = () => {
                     id="description"
                     name="description"
                     value={newTeam.description}
+                    onChange={(e) => setNewTeam({ ...newTeam, description: e.target.value })}
                     className="mt-1 p-2 border w-full rounded"
                     placeholder="팀에 대한 설명을 입력하세요."
                 />

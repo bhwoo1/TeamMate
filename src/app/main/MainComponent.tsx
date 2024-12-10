@@ -11,6 +11,7 @@ const MainComponent = () => {
     const {data: session, status} = useSession();
 
 
+
     return(
         <div className="flex items-center justify-center">
             {status === 'authenticated' ? 
