@@ -30,28 +30,31 @@ const CommunityBoard = ({ teamID } : { teamID: number }) => {
     };
 
     return (
-        <div className="p-8 w-full max-w-2xl">
+        <div className="p-8 w-full w-2/3">
             {postArr.length === 0 ? (
                 <p className="text-center">등록된 공지가 없습니다.</p>
             ) : (
-                <table className="w-full border-collapse border border-gray-300">
+                <table className="table table-striped table-hover">
                     <thead>
-                        <tr className="bg-gray-100">
-                            <th className="border px-4 py-2">번호</th>
-                            <th className="border px-4 py-2">제목</th>
-                            <th className="border px-4 py-2">작성자</th>
-                            <th className="border px-4 py-2">작성일</th>
+                        <tr className="table-light">
+                            <th style={{ width: '10%' }} className="text-center">구분</th>
+                            <th style={{ width: '50%' }} className="text-center">제목</th>
+                            <th style={{ width: '20%' }} className="text-center">작성자</th>
+                            <th style={{ width: '20%' }} className="text-center">작성일</th>
                         </tr>
                     </thead>
                     <tbody>
-                        
                         {postArr.map((post) => (
-                                <tr key={post.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => postClick(post.id)}>
-                                    <td className="border px-4 py-2 text-center">{post.id}</td>
-                                    <td className="border px-4 py-2">{post.title}</td>
-                                    <td className="border px-4 py-2">{post.posteduser}</td>
-                                    <td className="border px-4 py-2 text-center">{String(post.createdAt)}</td>
-                                </tr>
+                            <tr key={post.id} onClick={() => postClick(post.id)} className="cursor-pointer">
+                                {post.isNotice === true ?
+                                        <td className="text-center">공지</td>
+                                    :
+                                        <td className="text-center">자유</td>
+                                }
+                                <td>{post.title}</td>
+                                <td className="text-center">{post.posteduser}</td>
+                                <td className="text-center text-sm">{String(post.createdAt).split('T')[0]}</td>
+                            </tr>
                         ))}
                     </tbody>
                 </table>
