@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ReceivedTeam } from "../Type";
+import { ReceivedPost, ReceivedTeam } from "../Type";
 
 interface SearchTeamStore {
     searchResults: ReceivedTeam[],
@@ -7,6 +7,16 @@ interface SearchTeamStore {
 }
 
 export const useSearchTeamStore = create<SearchTeamStore>((set) => ({
+    searchResults: [],
+    setSearchResults: (results) => set({ searchResults: results }),
+}));
+
+interface SearchPostStore {
+    searchResults: ReceivedPost[],
+    setSearchResults: (results: ReceivedPost[]) => void;
+}
+
+export const useSearchPostStore = create<SearchPostStore>((set) => ({
     searchResults: [],
     setSearchResults: (results) => set({ searchResults: results }),
 }));

@@ -20,40 +20,43 @@ export async function POST(req: Request) {
         if (category === 'tico') {
             const posts = await prisma.post.findMany({
                 where: {
-                    title: {
-                        contains: keyword
-                    },
-                    content: {
-                        contains: keyword
-                    },
-                    teamId: Number(teamID)
+                    teamId: Number(teamID),
+                    OR: [
+                        { title: { contains: keyword } },
+                        { content: { contains: keyword } }
+                    ]
                 }
             });
-
+        
             return NextResponse.json(posts);
-        }
-        else if (category === 'title') {
+        } else if (category === 'title') {
             const posts = await prisma.post.findMany({
                 where: {
-                    content: {
-                        contains: keyword
-                    },
+                    title: { contains: keyword },
                     teamId: Number(teamID)
                 }
             });
-
+        
             return NextResponse.json(posts);
-        }
-        else {
+        } else if (category === 'content') {
+            const posts = await prisma.post.findMany({
+                where: {
+                    content: { contains: keyword },
+                    teamId: Number(teamID)
+                }
+            });
+        
+            return NextResponse.json(posts);
+        } else if (category === 'user') {
             const posts = await prisma.post.findMany({
                 where: {
                     posteduser: {
-                        contains: keyword
+                        contains: keyword,
                     },
                     teamId: Number(teamID)
                 }
             });
-
+        
             return NextResponse.json(posts);
         }
 

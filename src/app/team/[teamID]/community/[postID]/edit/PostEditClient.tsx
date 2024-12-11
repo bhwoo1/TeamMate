@@ -1,6 +1,6 @@
 "use client"
 
-import { ReceivedPost } from "@/app/Type";
+import { Post, ReceivedPost } from "@/app/Type";
 import { userRoleStore } from "@/app/zustand/store";
 import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
@@ -42,7 +42,11 @@ const PostEditClient = ({ teamID, postID }: { teamID: number, postID: number}) =
     );
 
     // Notice 데이터를 복사하여 로컬 상태로 관리
-    const [editedPost, setEditedPost] = useState<ReceivedPost | null>(null);
+    const [editedPost, setEditedPost] = useState<Post>({
+        title: "",
+        content: "",
+        isNotice: false,
+    });
 
     // React Query 데이터가 변경되면 로컬 상태를 업데이트
     useEffect(() => {

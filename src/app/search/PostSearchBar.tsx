@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { useMutation } from "react-query";
-import { useSearchTeamStore } from "../zustand/store";
+import { useSearchPostStore } from "../zustand/store";
 
 const submitKeyword = async ({ keyword, category, teamID }: { keyword: string, category: string, teamID: number }) => {
     console.log(keyword);
@@ -21,13 +21,14 @@ const submitKeyword = async ({ keyword, category, teamID }: { keyword: string, c
 const PostSearchBar = ({teamID}: {teamID: number}) => {
     const [searchKeyword, setSearchKeyword] = useState<string>("");
     const [category, setCategory] = useState<string>("tico");
-    const { setSearchResults } = useSearchTeamStore();
+    const { setSearchResults } = useSearchPostStore();
     const router = useRouter();
 
     const submitKeywordMutation = useMutation(submitKeyword, {
         onSuccess: (data) => {
             setSearchResults(data);
-            router.push('/search/result');
+            setSearchKeyword("");
+            router.push(`/team/${teamID}/search/${searchKeyword}`);
         },
         onError: (error: AxiosError) => {
             alert('검색에 실패했습니다!');
@@ -38,7 +39,13 @@ const PostSearchBar = ({teamID}: {teamID: number}) => {
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
 
-        submitKeywordMutation.mutate({keyword: searchKeyword, category: category, teamID: teamID});
+        if (searchKeyword === "") {
+            alert('검색어를 입력해주세요!')
+        }
+        else {
+            submitKeywordMutation.mutate({keyword: searchKeyword, category: category, teamID: teamID});
+        }
+
     }
     
     return(
