@@ -1,0 +1,65 @@
+import axios, { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
+import { FormEvent, useState } from "react";
+import { FaSearch } from "react-icons/fa";
+import { useMutation } from "react-query";
+import { useSearchTeamStore } from "../zustand/store";
+
+const submitKeyword = async ({ keyword, category }: { keyword: string, category: string }) => {
+    console.log(keyword);
+    const response = await axios.post("/api/search/post", {
+        keyword: keyword
+    }, {
+        headers: {
+            category: category
+        }
+    });
+    return response.data;
+}
+
+const PostSearchBar = () => {
+    const [searchKeyword, setSearchKeyword] = useState<string>("");
+    const [category, setCategory] = useState<string>("tico");
+    const { setSearchResults } = useSearchTeamStore();
+    const router = useRouter();
+
+    const submitKeywordMutation = useMutation(submitKeyword, {
+        onSuccess: (data) => {
+            setSearchResults(data);
+            router.push('/search/result');
+        },
+        onError: (error: AxiosError) => {
+            alert('검색에 실패했습니다!');
+            console.log("Search request failed:", error.message);
+        }
+    })
+
+    const handleSubmit = (e: FormEvent) => {
+        e.preventDefault();
+
+        submitKeywordMutation.mutate({keyword: searchKeyword, category: category});
+    }
+    
+    return(
+        <div className="w-2/3 mx-auto mb-4 flex items-center">
+            <form onSubmit={(e) => handleSubmit(e)} className="w-full border p-2 rounded-lg bg-gray-100 flex flex-row">
+                <select className="form-select form-select-sm w-1/4 bg-gray-100" onChange={(e) => setCategory(e.target.value)}>
+                    <option selected value={'tico'}>제목+본문</option>
+                    <option value={'title'}>제목</option>
+                    <option value={'content'}>본문</option>
+                    <option value={'user'}>작성자</option>
+                </select>
+                <input 
+                    type="text"
+                    className="w-full bg-gray-100 focus:outline-none"
+                    value={searchKeyword}
+                    onChange={(e) => setSearchKeyword(e.target.value)}
+                    placeholder="검색어를 입력하세요."
+                />
+                <button type="submit"><p className="p-2"><FaSearch /></p></button>
+            </form>
+        </div>
+    );
+}
+
+export default PostSearchBar;

@@ -14,7 +14,9 @@ export default async function TeamLayout({
         <AuthPage>
             <div>
                 <NavBar teamID={teamID} />
-                <main className="pl-[60px] sm:pl-[50px]">{children}</main> 
+                <main className="pl-[270px] sm:pl-[250px] w-full">
+                    {children}
+                </main>
             </div>
         </AuthPage>
     );

@@ -7,6 +7,7 @@ import { useQuery } from "react-query";
 import { FaPencilAlt } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import PostSearchBar from "@/app/search/PostSearchBar";
 
 const fetchPosts = async ({ teamID }: { teamID: number }) => {
     const response = await axios.get("/api/post", {
@@ -49,7 +50,7 @@ const CommunityBoard = ({ teamID }: { teamID: number }) => {
     };
 
     return (
-        <div className="p-8 w-full w-2/3">
+        <div className="p-8 w-full w-3/4">
             {postArr.length === 0 ? (
                 <p className="text-center">등록된 게시글이 없습니다.</p>
             ) : (
@@ -133,6 +134,9 @@ const CommunityBoard = ({ teamID }: { teamID: number }) => {
                         <span className="pl-2">작성</span>
                     </button>
                 </Link>
+            </div>
+            <div className="flex items-center justiy-center">
+                <PostSearchBar />
             </div>
         </div>
     );
