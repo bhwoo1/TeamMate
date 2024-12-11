@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "react-query";
+import CommentList from "../../comment/Comment";
 
 const fetchPost = async ({teamID, postID}: {teamID: number, postID: number}) => {
     const response = await axios.get('/api/post', {
@@ -80,6 +81,16 @@ const PostClient = ({ teamID, postID }: { teamID: number, postID: number}) => {
             <Link href={`/team/${teamID}/community`} className="border rounded-md border-gray-300">
                 <button className="mx-4 my-2">목록</button>
             </Link>
+            {post?.isNotice ? 
+                    <div className="border-2 m-4 w-[500px] text-center p-4">
+                        <p>댓글을 작성할 수 없습니다.</p>
+                    </div>
+                :
+                    <div className="pt-4">
+                        <CommentList postID={Number(post?.id)} teamID={teamID} comments={post?.comments || []} />
+                    </div>
+            }
+            
         </ main>
     );
 }

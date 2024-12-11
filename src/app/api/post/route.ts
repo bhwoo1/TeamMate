@@ -18,6 +18,9 @@ export async function GET(req: Request) {
                     id: Number(postID),
                     teamId: Number(teamID), // 팀 ID로 필터링
                 },
+                include: {
+                    comments: true, // comments 관계를 포함하여 조회
+                },
             });
 
             if (!post) {
