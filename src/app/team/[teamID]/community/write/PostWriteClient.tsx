@@ -23,7 +23,7 @@ const submitPost = async ({title, content, isNotice, user, username, teamID}: {t
     }, {
         headers: {
             requestUser: user,
-            teamID: teamID
+            teamID: String(teamID)
         }
     });
 }
@@ -41,12 +41,14 @@ const PostWriteClient = ({teamID}: {teamID: number}) => {
             router.push(`/team/${teamID}/community`);
         },
         onError: (error: AxiosError) => {
-            console.error("Delete request failed:", error.response?.data || error.message);
+            console.error("Post request failed:", error.response?.data || error.message);
         }
     });
 
     const handleSubmit = ({e, title, content, isNotice} : {e: FormEvent, title: string, content: string, isNotice: boolean}) => {
         e.preventDefault();
+
+        console.log(teamID);
 
         if (session?.user?.email) {
             submitPostMutation.mutate({title: title, content: content, isNotice: isNotice, user: String(session.user.email), username: String(session.user.name), teamID: teamID});

@@ -10,13 +10,21 @@ async function isAdmin(requestUser: string) {
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json();
+        const { title, content, isNotice, postedUser } = await req.json();
         const requestUser = req.headers.get("requestUser");
-        const teamID = req.headers.get("teamID"); // teamID 가져오기
+        const teamID = req.headers.get("teamID");
+
+        if (!title || !content || !postedUser || !requestUser || !teamID) {
+            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        }
 
         if (!requestUser || !teamID) {
             return NextResponse.json({ error: "User and Team ID are required" }, { status: 400 });
         }
+
+        console.log(title, content, isNotice, postedUser)
+        console.log(requestUser)
+        console.log(teamID)
 
         // 이메일로 유저 ID 찾기
         const user = await prisma.user.findUnique({
@@ -25,31 +33,33 @@ export async function POST(req: Request) {
         });
 
         if (!user) {
-            return NextResponse.json({ error: "User is not found" }, { status: 400 });
+            return NextResponse.json({ error: "User not found" }, { status: 400 });
         }
 
-        if (body.isNotice === true) {
-            // 관리자가 아니면 권한 거부
-            if (!(await isAdmin(user.id))) {
-                return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-            }
+        // 관리자인지 체크
+        if (isNotice && !(await isAdmin(user.id))) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
         // 게시글 생성
         const post = await prisma.post.create({
             data: {
-                title: body.title,
-                content: body.content,
-                isNotice: body.isNotice,
-                posteduser: body.posteduser,
-                teamId: parseInt(teamID),
+                title: title,
+                content: content,
+                isNotice: isNotice,
+                posteduser: postedUser,
+                teamId: Number(teamID),
             },
         });
 
         return NextResponse.json(post, { status: 200 });
 
     } catch (err) {
-        console.error(err);
-        return NextResponse.json({ error: "Failed to create notice" }, { status: 500 });
+        console.error("Error occurred:", err);
+
+        // err가 객체가 아닐 경우, 기본 값을 처리하도록 함
+        const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
+        
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }

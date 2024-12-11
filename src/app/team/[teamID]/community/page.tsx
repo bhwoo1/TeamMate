@@ -1,7 +1,7 @@
 import Link from "next/link";
 
-const CommunityPage = async (params: Promise<{ teamID: number }>) => {
-    const teamID = (await params).teamID
+const CommunityPage = async ({params}: {params: Promise<{ teamID: number }>}) => {
+    const { teamID } = await params;
     
     return(
         <div className="flex flex-col justify-center items-center h-screen">
