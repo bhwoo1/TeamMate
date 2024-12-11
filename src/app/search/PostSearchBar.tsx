@@ -5,19 +5,20 @@ import { FaSearch } from "react-icons/fa";
 import { useMutation } from "react-query";
 import { useSearchTeamStore } from "../zustand/store";
 
-const submitKeyword = async ({ keyword, category }: { keyword: string, category: string }) => {
+const submitKeyword = async ({ keyword, category, teamID }: { keyword: string, category: string, teamID: number }) => {
     console.log(keyword);
     const response = await axios.post("/api/search/post", {
         keyword: keyword
     }, {
         headers: {
-            category: category
+            category: category,
+            teamID: teamID
         }
     });
     return response.data;
 }
 
-const PostSearchBar = () => {
+const PostSearchBar = ({teamID}: {teamID: number}) => {
     const [searchKeyword, setSearchKeyword] = useState<string>("");
     const [category, setCategory] = useState<string>("tico");
     const { setSearchResults } = useSearchTeamStore();
@@ -37,7 +38,7 @@ const PostSearchBar = () => {
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
 
-        submitKeywordMutation.mutate({keyword: searchKeyword, category: category});
+        submitKeywordMutation.mutate({keyword: searchKeyword, category: category, teamID: teamID});
     }
     
     return(

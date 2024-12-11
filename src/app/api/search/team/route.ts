@@ -14,18 +14,12 @@ export async function POST(req: Request) {
             where: {
                 teamName: {
                     contains: keyword,
-                }
+                },
             }
         });
-
         console.log(teams);
 
-        if (teams.length) {
-            return NextResponse.json(teams);
-        }
-        else {
-            return NextResponse.json({ error: "Failed to search"}, { status: 500 });
-        }
+        return NextResponse.json(teams);
 
         
     } catch (error) {

@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
     const body = await req.json();
     const category = req.headers.get("category");
+    const teamID = req.headers.get("teamID");
     const { keyword } = body
 
     if (!keyword) {
@@ -24,7 +25,8 @@ export async function POST(req: Request) {
                     },
                     content: {
                         contains: keyword
-                    }
+                    },
+                    teamId: Number(teamID)
                 }
             });
 
@@ -35,7 +37,8 @@ export async function POST(req: Request) {
                 where: {
                     content: {
                         contains: keyword
-                    }
+                    },
+                    teamId: Number(teamID)
                 }
             });
 
@@ -46,7 +49,8 @@ export async function POST(req: Request) {
                 where: {
                     posteduser: {
                         contains: keyword
-                    }
+                    },
+                    teamId: Number(teamID)
                 }
             });
 
