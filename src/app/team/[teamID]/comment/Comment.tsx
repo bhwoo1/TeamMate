@@ -4,11 +4,13 @@ import CommentForm from "./CommentForm";
 import { useSession } from "next-auth/react";
 import axios, { AxiosError } from "axios";
 import { useMutation } from "react-query";
+import { useRouter } from "next/navigation";
 
-const deleteComment = async ({postID, teamID, user, commentId}: {postID: number; teamID: number; user:string, commentId: number}) => {
-    await axios.delete('/api/comment', {
+const deleteComment = async ({postID, teamID, user, username, commentId}: {postID: number; teamID: number; user:string, username: string, commentId: number}) => {
+    await axios.delete('/api/comment/delete', {
         headers: {
-            requestUser: user
+            requestUser: user,
+            requestUsername: username
         },
         data: {
             postID: postID,
@@ -18,15 +20,16 @@ const deleteComment = async ({postID, teamID, user, commentId}: {postID: number;
     });
 }
 
-const updateComment = async ({postID, teamID, user, commentId, comment}: {postID: number; teamID: number; user:string, commentId: number, comment:string}) => {
-    await axios.put('/api/comment', {
+const updateComment = async ({postID, teamID, user, username, commentId, comment}: {postID: number; teamID: number; user:string, username: string, commentId: number, comment:string}) => {
+    await axios.put('/api/comment/update', {
         postID: postID,
         teamID: teamID,
         content: comment,
         commentId: commentId
     }, {
         headers: {
-            requestUser: user
+            requestUser: user,
+            requestUsername: username
         }
     })
 }
@@ -34,6 +37,7 @@ const updateComment = async ({postID, teamID, user, commentId, comment}: {postID
 
 const CommentList = ({postID, teamID, comments}: { postID: number, teamID: number, comments: Comment[] }) => {
     const { data:session } = useSession();
+    const router = useRouter();
     const [editComment, setEditComment] = useState<string>("");
     const [editCommentMode, setEditCommentMode] = useState<number | null>(null);
 
@@ -43,7 +47,8 @@ const CommentList = ({postID, teamID, comments}: { postID: number, teamID: numbe
 
     const deleteCommentMutation = useMutation(deleteComment, {
         onSuccess: () => {
-            window.location.reload();
+            // window.location.reload();
+            router.push(`/team/${teamID}/community`);
         },
         onError: (error: AxiosError) => {
             console.error("Delete request failed:", error.response?.data || error.message);
@@ -52,7 +57,8 @@ const CommentList = ({postID, teamID, comments}: { postID: number, teamID: numbe
 
     const updateCommentMutation = useMutation(updateComment, {
         onSuccess: () => {
-            window.location.reload();
+            // window.location.reload();
+            router.push(`/team/${teamID}/community`);
         },
         onError: (error: AxiosError) => {
             console.error("Update request failed:", error.response?.data || error.message);
@@ -63,13 +69,13 @@ const CommentList = ({postID, teamID, comments}: { postID: number, teamID: numbe
 
     const handleDelete = (commentId: number) => {
         if (session?.user?.email) {
-            deleteCommentMutation.mutate({ postID: postID, teamID: teamID, user: String(session.user.name), commentId: commentId });
+            deleteCommentMutation.mutate({ postID: postID, teamID: teamID, user: String(session.user.email), username: String(session.user.name), commentId: commentId });
         }
     };
 
     const handleUpdate = ({comment, commentId} : {comment: string, commentId: number}) => {
         if (session?.user?.email) {
-            updateCommentMutation.mutate({postID: postID, teamID: teamID, user: String(session.user.name), commentId: commentId, comment: comment});
+            updateCommentMutation.mutate({postID: postID, teamID: teamID, user: String(session.user.email), username: String(session.user.name), commentId: commentId, comment: comment});
         }
     }
 
