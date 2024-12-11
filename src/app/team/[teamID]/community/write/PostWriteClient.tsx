@@ -14,11 +14,12 @@ const initialPost:Post = {
     isNotice: false
 }
 
-const submitPost = async ({title, content, isNotice, user, teamID}: {title: string, content: string, isNotice: boolean, user: string, teamID: number}) => {
+const submitPost = async ({title, content, isNotice, user, username, teamID}: {title: string, content: string, isNotice: boolean, user: string, username: string, teamID: number}) => {
     await axios.post('/api/post/write', {
         title: title,
         content: content,
-        isNotice: isNotice
+        isNotice: isNotice,
+        postedUser: username
     }, {
         headers: {
             requestUser: user,
@@ -48,7 +49,7 @@ const PostWriteClient = ({teamID}: {teamID: number}) => {
         e.preventDefault();
 
         if (session?.user?.email) {
-            submitPostMutation.mutate({title: title, content: content, isNotice: isNotice, user: String(session.user.email), teamID: teamID});
+            submitPostMutation.mutate({title: title, content: content, isNotice: isNotice, user: String(session.user.email), username: String(session.user.name), teamID: teamID});
         }
     }
     

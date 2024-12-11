@@ -91,7 +91,7 @@ model Team {
 
 model TeamUser {
   id         Int     @id @default(autoincrement())
-  userId     String  // 이메일 대신 유저 id를 사용
+  userId     String  @unique // 이메일 대신 유저 id를 사용
   teamId     Int
   role       String  @default("member") // "member" or "admin"
   
@@ -115,6 +115,7 @@ model Post {
   id       Int      @id @default(autoincrement())
   title    String
   content  String
+  posteduser String
   isNotice Boolean  @default(false)
   comments Comment[]
   teamId   Int
