@@ -14,7 +14,7 @@ export async function POST(req: Request) {
 
         // 유저 이메일이 없을 경우
         if (!requestUser || requestUser.trim() === "") {
-            console.error("User email is missing:", requestUser);
+            console.error("User email is missing");
             return NextResponse.json({ error: "User email is required" }, { status: 400 });
         }
 

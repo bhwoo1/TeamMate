@@ -20,3 +20,13 @@ export const usePageStore = create<PageStore>((set) => ({
     currentPage: "",
     setCurrentPage: (page: string) => set({ currentPage: page })
 }));
+
+interface RoleStore {
+    isAdmin: boolean;
+    setIsAdmin: (isAdmin: boolean) => void;
+}
+
+export const userRoleStore = create<RoleStore>((set) => ({
+    isAdmin: false,
+    setIsAdmin: (state: boolean) => set({ isAdmin: state})
+}));
