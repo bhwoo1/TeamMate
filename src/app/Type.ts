@@ -52,6 +52,7 @@ export interface ReceivedPost extends Post {
     comments: Comment[];
     teamId: number;
     team: Team;
+    posteduser: string;
     createdAt: Date;
 }
 
