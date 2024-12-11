@@ -1,11 +1,11 @@
 "use client"
 
 import { ReceivedPost } from "@/app/Type";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 
 const fetchPost = async ({teamID, postID}: {teamID: number, postID: number}) => {
     const response = await axios.get('/api/post', {
@@ -17,6 +17,19 @@ const fetchPost = async ({teamID, postID}: {teamID: number, postID: number}) => 
     return response.data;
 }
 
+const deletePost = async ({ postID, teamID, user, username }: { postID: number, teamID: number, user: string, username: string }) => {
+    await axios.delete(`/api/post/delete`, {
+        headers: {
+            requestUser: user,
+            requestUsername: username,
+            teamID: teamID,
+        },
+        params: {
+            postID: postID,
+        }
+    });
+}
+
 const PostClient = ({ teamID, postID }: { teamID: number, postID: number}) => {
     const { data: post, isLoading, isError, error } = useQuery<ReceivedPost, Error>(
         "post",
@@ -25,8 +38,24 @@ const PostClient = ({ teamID, postID }: { teamID: number, postID: number}) => {
     const router = useRouter();
     const {data: session} = useSession();
 
+    const deleteNoticeMutation = useMutation(deletePost, {
+        onSuccess: () => {
+            alert('삭제되었습니다.');
+            router.push(`/team/${teamID}/community`);
+        }, 
+        onError: (error: AxiosError) => {
+            console.error("Delete request failed:", error.response?.data || error.message);
+        }
+      });
+
     if (isLoading) return <p className="text-center">Loading...</p>;
     if (isError) return <p className="text-center">Error: {error.message}</p>;
+
+    const handleDelete = () => {
+        if (session?.user?.email) {
+            deleteNoticeMutation.mutate({ postID: postID, teamID: teamID,  user: String(session.user.email), username: String(session.user.name) });
+        }
+    };
     
     return(
         <main className="flex min-h-screen flex-col items-center justify-center p-20">
@@ -36,7 +65,7 @@ const PostClient = ({ teamID, postID }: { teamID: number, postID: number}) => {
                     {post?.posteduser === session?.user?.name &&
                         <div className="flex flex-row justify-between w-[100px] text-sm text-gray-500">
                             <button className="flex-1" onClick={() => router.push(`/team/${teamID}/community/${postID}/edit`)}>수정</button>
-                            <button className="flex-1">삭제</button>
+                            <button className="flex-1" onClick={handleDelete}>삭제</button>
                         </div>
                     }
                 </div>

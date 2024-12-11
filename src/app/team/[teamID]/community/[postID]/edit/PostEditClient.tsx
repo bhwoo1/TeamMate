@@ -53,6 +53,7 @@ const PostEditClient = ({ teamID, postID }: { teamID: number, postID: number}) =
 
     const updatePostMutation = useMutation(updatePost, {
         onSuccess: () => {
+            // 수정 완료 후 게시글 상세 페이지로 리다이렉트
             router.push(`/team/${teamID}/community/${postID}`);
         },
         onError: (error: AxiosError) => {
