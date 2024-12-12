@@ -4,6 +4,7 @@ import { ReceivedTeam } from "@/app/Type";
 import axios from "axios";
 import Image from "next/image";
 import { useQuery } from "react-query";
+import JoinBtn from "./JoinBtn";
 
 const fetchTeamInfo = async ({ teamID }: { teamID: number }) => {
     const response = await axios.get("/api/team/teaminfo", {
@@ -26,6 +27,7 @@ const TeamInfo = (props: { teamID: number }) => {
             <p>{teaminfo?.teamName}</p>
             <p>{teaminfo?.description}</p>
             <Image src={String(teaminfo?.teamLogo)} width={200} height={200} alt="teamlogo"/>
+            <JoinBtn teamID={props.teamID} />
         </>
     );
 }

@@ -33,7 +33,7 @@ export async function GET(req: Request) {
         });
 
         if (!teamUser) {
-            return NextResponse.json({ error: "User is not part of the team" }, { status: 400 });
+            return NextResponse.json({ message: "User is not part of the team", status: "not_a_member" }, { status: 200 });
         }
 
         return NextResponse.json({ role: teamUser.role }, { status: 200 });

@@ -1,56 +1,109 @@
 import { prisma } from "@/app/prisma";
 import { NextResponse } from "next/server";
 
+// 관리자 확인 함수
 async function isAdmin(requestUser: string) {
-    const user = await prisma.teamUser.findUnique({
-        where: { userId: requestUser },
-    });
-    return user?.role === "admin";
+  const user = await prisma.teamUser.findUnique({
+      where: { userId: requestUser },
+  });
+  return user?.role === "admin";
 }
 
 export async function POST(req: Request) {
+  try {
+    // 요청 본문 파싱
     const body = await req.json();
-    const userId = req.headers.get("userId"); // 요청 헤더에서 유저 ID를 가져옴
-    const { teamId } = body;
-  
-    if (!userId || !teamId) {
-      return NextResponse.json({ error: "User ID and Team ID are required" }, { status: 400 });
+    const RequestUser = req.headers.get("RequestUser"); // 요청 헤더에서 유저 이메일 가져오기
+    const RequestUsername = req.headers.get("RequestUsername");
+    const { teamID } = body;
+
+    // 값 확인용 로그
+    console.log("RequestUser:", RequestUser);
+    console.log("RequestUsername:", RequestUsername);
+    console.log("Request body:", body);
+
+    // 필수 값 검증
+    if (!RequestUser || !teamID || !RequestUsername) {
+      return NextResponse.json(
+        { error: "User email and Team ID are required" },
+        { status: 400 }
+      );
     }
-  
-    try {
-      // 팀 가입 요청 기록
-      await prisma.teamJoinRequest.create({
-        data: {
-          userId,
-          teamId,
-          status: "pending", // 기본 상태는 pending
-        },
-      });
-  
-      return NextResponse.json({ message: "Join request submitted successfully." });
-    } catch (error) {
-      console.error("Error submitting join request", error);
-      return NextResponse.json({ error: "Failed to submit join request" }, { status: 500 });
+
+    // 이메일로 유저 검색
+    const user = await prisma.user.findUnique({
+      where: { email: RequestUser },
+      select: { id: true }, // 유저 ID만 가져옴
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 400 });
     }
+
+    const userId = user.id; // 검색된 유저의 ID
+    console.log("Found userId:", userId);
+
+    // 팀 ID 확인 (팀이 실제로 존재하는지 확인)
+    const team = await prisma.team.findUnique({
+      where: { id: Number(teamID) },
+    });
+
+    if (!team) {
+      return NextResponse.json({ error: "Team not found" }, { status: 400 });
+    }
+
+    // 팀 가입 요청 기록 생성
+    const joinRequest = await prisma.teamJoinRequest.create({
+      data: {
+        userId: userId,
+        username: RequestUsername,
+        teamId: Number(teamID),
+        status: "pending", // 기본 상태
+      },
+    });
+
+    console.log("Join request created:", joinRequest);
+
+    return NextResponse.json({
+      joinRequest,
+    });
+  } catch (error) {
+    console.error("Error submitting join request:", error);
+    return NextResponse.json(
+      { error: "Failed to submit join request" },
+      { status: 500 }
+    );
+  }
 }
 
 export async function GET(req: Request) {
-    const body = await req.json();
-    const requestUser = req.headers.get("requestUser");
+    const url = new URL(req.url);
+    const teamID = url.searchParams.get("teamID");
+    const RequestUser = url.searchParams.get("RequestUser");
   
-    if (!requestUser) {
-      return NextResponse.json({ error: "Request User is required" }, { status: 400 });
+    if (!RequestUser || !teamID) {
+      return NextResponse.json({ error: "Request User and Team ID are required" }, { status: 400 });
     }
 
-    if (!(await isAdmin(requestUser))) {
+    // 이메일로 유저 ID 찾기
+    const user = await prisma.user.findUnique({
+      where: { email: RequestUser },
+      select: { id: true }, // userId만 가져오기
+  });
+
+  if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 400 });
+  }
+
+    if (!(await isAdmin(user.id))) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
   
     try {
-      // 유저의 팀 가입 요청 상태 조회
+      // 팀 가입 요청 상태 조회
       const joinRequests = await prisma.teamJoinRequest.findMany({
         where: {
-          teamId: body.teamId
+          teamId: Number(teamID)
         },
         include: { team: true }, // 팀 정보 포함
       });

@@ -102,6 +102,7 @@ model TeamUser {
 model TeamJoinRequest {
   id        Int      @id @default(autoincrement())
   userId    String
+  username  String
   teamId    Int
   status    String  @default("pending")
   user      User    @relation(fields: [userId], references: [id])

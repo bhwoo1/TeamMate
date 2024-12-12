@@ -32,11 +32,11 @@ export const usePageStore = create<PageStore>((set) => ({
 }));
 
 interface RoleStore {
-    isAdmin: boolean;
-    setIsAdmin: (isAdmin: boolean) => void;
+    isAdmin: string;
+    setIsAdmin: (isAdmin: string) => void;
 }
 
 export const userRoleStore = create<RoleStore>((set) => ({
-    isAdmin: false,
-    setIsAdmin: (state: boolean) => set({ isAdmin: state})
+    isAdmin: "user",
+    setIsAdmin: (state: string) => set({ isAdmin: state})
 }));

@@ -1,5 +1,6 @@
 "use client"
 
+import { userRoleStore } from "@/app/zustand/store";
 import axios, { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -22,6 +23,7 @@ const submitComment = async ({content, username, user, postID, teamID}: {content
 
 const CommentForm = ({postID, teamID}: {postID: number, teamID: number}) => {
     const queryClient = useQueryClient();
+    const { isAdmin } = userRoleStore();
     const router = useRouter();
     const [content, setContent] = useState<string>("");
     const {data: session} = useSession();
@@ -56,17 +58,26 @@ const CommentForm = ({postID, teamID}: {postID: number, teamID: number}) => {
     }
 
     return(
-        <div className="">
-            <div className="border border-gray-300">
-                <p>댓글 쓰기</p>
-            </div>
-            <form onSubmit={(e) => handleSubmit({e, content})} className="flex flex-col">
-                <textarea id="content" name="content" className="p-2 w-[500px] border border-gray-300" placeholder="댓글 내용을 입력해주세요." value={content} onChange={(e) => setContent(e.target.value)}/>
-                <div className="flex justify-end">
-                    <button type="submit" className="bg-blue-500 w-1/5 m-2 mr-0 p-2 text-white text-sm font-bold">댓글 등록</button>
+        <>
+        {isAdmin === 'noMember' ?
+                <div className="border-2 m-4 w-[500px] text-center p-4">
+                    <p>댓글 작성 권한이 없습니다.</p>
                 </div>
-            </form>
-        </div>
+            :
+            <div className="">
+                <div className="border border-gray-300">
+                    <p>댓글 쓰기</p>
+                </div>
+                <form onSubmit={(e) => handleSubmit({e, content})} className="flex flex-col">
+                    <textarea id="content" name="content" className="p-2 w-[500px] border border-gray-300" placeholder="댓글 내용을 입력해주세요." value={content} onChange={(e) => setContent(e.target.value)}/>
+                    <div className="flex justify-end">
+                        <button type="submit" className="bg-blue-500 w-1/5 m-2 mr-0 p-2 text-white text-sm font-bold">댓글 등록</button>
+                    </div>
+                </form>
+            </div>
+        }
+        </>
+        
     );
 }
 

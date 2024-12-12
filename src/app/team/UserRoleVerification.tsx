@@ -27,8 +27,13 @@ const UserRoleVerification = ({ teamID }: { teamID: number }) => {
 
     useEffect(() => {
         if (userRole && userRole.role === 'admin') {
-            setIsAdmin(true);
+            setIsAdmin('admin');
+        } else if (userRole?.status === "not_a_member") {
+            setIsAdmin('noMember');
+        } else {
+            setIsAdmin('user');
         }
+
         
     }, [userRole])
 

@@ -3,6 +3,7 @@
 import axios from "axios";
 import { useQuery } from "react-query";
 import { ReceivedTeam } from "../Type";
+import Link from "next/link";
 
 const fetchEntireTeams = async () => {
     const response = await axios.get("/api/team");
@@ -26,7 +27,9 @@ const EntireTeamList = () => {
                 <>
                     {entireTeamArr.map((team) => (
                         <div key={team.id}>
-                            <p>{team.teamName}</p>
+                            <Link href={`/team/${team.id}`}>
+                                <p>{team.teamName}</p>
+                            </Link>
                         </div>
                     ))}
                 </>

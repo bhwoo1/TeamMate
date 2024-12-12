@@ -33,6 +33,7 @@ export interface TeamUser {
 export interface TeamJoinRequest {
     id: number;
     userId: string;
+    username: string;
     teamId: number;
     status: "pending" | "approved" | "rejected"; // 상태를 명시적으로 제한
     user: User;

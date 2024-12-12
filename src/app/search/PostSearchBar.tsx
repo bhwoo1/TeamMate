@@ -51,11 +51,15 @@ const PostSearchBar = ({teamID}: {teamID: number}) => {
     return(
         <div className="w-2/3 mx-auto mb-4 flex items-center">
             <form onSubmit={(e) => handleSubmit(e)} className="w-full border p-2 rounded-lg bg-gray-100 flex flex-row">
-                <select className="form-select form-select-sm w-1/4 bg-gray-100" onChange={(e) => setCategory(e.target.value)}>
-                    <option selected value={'tico'}>제목+본문</option>
-                    <option value={'title'}>제목</option>
-                    <option value={'content'}>본문</option>
-                    <option value={'user'}>작성자</option>
+                <select 
+                    className="form-select form-select-sm w-1/4 bg-gray-100" 
+                    value={category} 
+                    onChange={(e) => setCategory(e.target.value)}
+                >
+                    <option value="tico">제목+본문</option>
+                    <option value="title">제목</option>
+                    <option value="content">본문</option>
+                    <option value="user">작성자</option>
                 </select>
                 <input 
                     type="text"
