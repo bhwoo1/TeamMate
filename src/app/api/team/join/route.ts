@@ -63,8 +63,8 @@ export async function POST(req: Request) {
 
     if (existingRequest) {
       return NextResponse.json(
-        { error: "You have already submitted a join request for this team." },
-        { status: 400 }
+        { message: "You have already submitted a join request for this team." },
+        { status: 200 }
       );
     }
 

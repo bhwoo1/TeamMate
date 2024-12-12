@@ -25,22 +25,16 @@ const JoinBtn = ({teamID}: {teamID: number}) => {
     const { data: session } = useSession();
 
     const submitJoinRequestMutation = useMutation(submitJoinReqeust, {
-        onSuccess: () => {
-            alert('신청되었습니다.');
-        },
+        onSuccess: (data) => {
+            // 서버에서 200 OK와 함께 메시지가 반환되면, 이미 가입 요청을 한 경우를 처리
+            if (data.message === "You have already submitted a join request for this team.") {
+              alert('이미 가입 신청 하셨습니다.');
+            } else {
+              alert("신청되었습니다.");
+            }
+          },
         onError: (error: AxiosError) => {
-            // 중복 요청 발생 시
-            if (error.response?.data && typeof error.response.data === 'object' && 'error' in error.response.data) {
-                // error.response.data에서 error 속성 존재 여부 체크 후 접근
-                const errorMessage = (error.response.data as { error: string }).error;
-                if (errorMessage === "You have already submitted a join request for this team.") {
-                  alert("이미 가입 신청을 하셨습니다.");
-                } else {
-                  console.error("Submit request failed:", errorMessage);
-                }
-              } else {
-                console.error("Submit request failed:", error.response?.data || error.message);
-              }
+            console.error("Submit request failed:", error.response?.data || error.message);
         }
     });
 
