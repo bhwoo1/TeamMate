@@ -29,7 +29,18 @@ const JoinBtn = ({teamID}: {teamID: number}) => {
             alert('신청되었습니다.');
         },
         onError: (error: AxiosError) => {
-            console.error("Submit request failed:", error.response?.data || error.message);
+            // 중복 요청 발생 시
+            if (error.response?.data && typeof error.response.data === 'object' && 'error' in error.response.data) {
+                // error.response.data에서 error 속성 존재 여부 체크 후 접근
+                const errorMessage = (error.response.data as { error: string }).error;
+                if (errorMessage === "You have already submitted a join request for this team.") {
+                  alert("이미 가입 신청을 하셨습니다.");
+                } else {
+                  console.error("Submit request failed:", errorMessage);
+                }
+              } else {
+                console.error("Submit request failed:", error.response?.data || error.message);
+              }
         }
     });
 

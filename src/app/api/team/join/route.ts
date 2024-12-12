@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     // 필수 값 검증
     if (!RequestUser || !teamID || !RequestUsername) {
       return NextResponse.json(
-        { error: "User email and Team ID are required" },
+        { error: "User email, Team ID, and Username are required" },
         { status: 400 }
       );
     }
@@ -50,6 +50,22 @@ export async function POST(req: Request) {
 
     if (!team) {
       return NextResponse.json({ error: "Team not found" }, { status: 400 });
+    }
+
+    // 중복 요청 확인: 동일한 유저와 팀에 대해 'pending' 상태의 요청이 이미 있는지 확인
+    const existingRequest = await prisma.teamJoinRequest.findFirst({
+      where: {
+        userId: userId,
+        teamId: Number(teamID),
+        status: "pending", // 대기 중인 요청만 확인
+      },
+    });
+
+    if (existingRequest) {
+      return NextResponse.json(
+        { error: "You have already submitted a join request for this team." },
+        { status: 400 }
+      );
     }
 
     // 팀 가입 요청 기록 생성
