@@ -28,7 +28,7 @@ const PostSearchBar = ({teamID}: {teamID: number}) => {
         onSuccess: (data) => {
             setSearchResults(data);
             setSearchKeyword("");
-            router.push(`/team/${teamID}/search/${searchKeyword}`);
+            router.push(`/team/${teamID}/search/${encodeURIComponent(searchKeyword)}`);
         },
         onError: (error: AxiosError) => {
             alert('검색에 실패했습니다!');

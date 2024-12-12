@@ -8,7 +8,7 @@ const CommunityBoard = async ({ params }: { params: Promise<{ teamID: number, ke
         <div className="flex flex-col justify-center items-center h-screen">
             {/* 검색어 정렬을 왼쪽으로 */}
             <div className="w-full max-w-3xl flex flex-row justify-between">
-                <p className="text-left mb-4">검색어: {keyword}</p>
+                <p className="text-left mb-4">검색어: {decodeURIComponent(keyword)}</p>
                 <Link href={`/team/${teamID}/community`}><button className="btn-close"></button></Link>
             </div>
             <SearchResultBoard teamID={teamID} />
