@@ -57,15 +57,18 @@ export async function POST(req: Request) {
       where: {
         userId: userId,
         teamId: Number(teamID),
-        status: "pending", // 대기 중인 요청만 확인
       },
     });
 
-    if (existingRequest) {
+    if (existingRequest && existingRequest.status === "pending") {
       return NextResponse.json(
         { message: "You have already submitted a join request for this team." },
         { status: 200 }
       );
+    } else if (existingRequest && existingRequest.status === "rejected") {
+      await prisma.teamJoinRequest.delete({
+        where: { id: existingRequest.id },
+      });
     }
 
     // 팀 가입 요청 기록 생성
@@ -119,7 +122,8 @@ export async function GET(req: Request) {
       // 팀 가입 요청 상태 조회
       const joinRequests = await prisma.teamJoinRequest.findMany({
         where: {
-          teamId: Number(teamID)
+          teamId: Number(teamID),
+          status: "fending"
         },
         include: { team: true }, // 팀 정보 포함
       });
@@ -135,13 +139,26 @@ export async function GET(req: Request) {
 export async function PUT(req: Request) {
   const body = await req.json();
   const { requestId, action } = body; // requestId: 팀 가입 요청 ID, action: "approve" 또는 "reject"
-  const requestUser = req.headers.get("requestUser"); // 관리자의 ID
+  const requestUser = req.headers.get("ReqeustUser"); // 관리자의 ID
+  const teamID = req.headers.get("teamID");
 
-  if (!requestUser || !requestId || !action) {
+  console.log(requestId, requestUser, teamID, action);
+
+  if (!requestUser || !requestId || !action || !teamID) {
     return NextResponse.json({ error: "Request ID, action and User ID are required" }, { status: 400 });
   }
 
-  if (!(await isAdmin(requestUser))) {
+  // 이메일로 유저 ID 찾기
+  const user = await prisma.user.findUnique({
+    where: { email: requestUser },
+    select: { id: true }, // userId만 가져오기
+});
+
+if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 400 });
+}
+
+  if (!(await isAdmin(user.id))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
@@ -175,6 +192,8 @@ export async function PUT(req: Request) {
         where: { id: requestId },
         data: { status: "approved" },
       });
+
+
     } else if (action === "reject") {
       // 요청 거부 시, 상태를 거부로 변경
       await prisma.teamJoinRequest.update({

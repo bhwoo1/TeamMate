@@ -6,25 +6,21 @@ export async function POST(req: Request) {
         const body = await req.json();
         const requestUser = req.headers.get("requestUser");
 
-        // 요청 본문이 비어있는지 확인
         if (!body || Object.keys(body).length === 0) {
             console.error("Request body is empty:", body);
             return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
         }
 
-        // 유저 이메일이 없을 경우
         if (!requestUser || requestUser.trim() === "") {
             console.error("User email is missing");
             return NextResponse.json({ error: "User email is required" }, { status: 400 });
         }
 
-        // 요청 본문에 필수 값들이 있는지 확인
         if (!body.teamName || !body.description || !body.location || !body.teamLogo) {
             console.error("Missing required fields in body:", body);
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
-        // 이메일로 실제 유저를 찾기
         const user = await prisma.user.findUnique({
             where: { email: requestUser },
         });
@@ -33,7 +29,6 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "User is not found" }, { status: 400 });
         }
 
-        // 새로운 팀 생성
         const newTeam = await prisma.team.create({
             data: {
                 teamName: body.teamName,
@@ -45,14 +40,32 @@ export async function POST(req: Request) {
 
         console.log("New team created:", newTeam);
 
-        // 유저의 id를 기준으로 teamUser 등록
-        await prisma.teamUser.create({
-            data: {
-                userId: user.id,  // 이메일 대신 유저 id 사용
-                teamId: newTeam.id,
-                role: "admin",  // 관리자 역할
-            },
-        });
+        // 데이터 유효성 검사
+        if (!user.id || !newTeam.id) {
+            console.error("Invalid data for teamUser creation:", {
+                userId: user?.id,
+                teamId: newTeam?.id,
+            });
+            return NextResponse.json({ error: "Invalid teamUser data" }, { status: 400 });
+        }
+
+        try {
+            const teamUserData = {
+                userId: String(user.id),
+                teamId: Number(newTeam.id),
+                role: "admin",
+            };
+            
+            console.log("TeamUser Data:", teamUserData);
+            
+            // teamUser 생성
+            await prisma.teamUser.create({
+                data: teamUserData,
+            });
+        } catch (teamUserError) {
+            console.error("Error creating teamUser:", teamUserError);
+            return NextResponse.json({ error: "Failed to create teamUser" }, { status: 500 });
+        }
 
         return NextResponse.json(newTeam, { status: 200 });
     } catch (err) {

@@ -33,7 +33,7 @@ export async function PUT(req: Request) {
 
 
 
-        if (post.posteduser === requestUsername) {
+        if (comment.posteduser === requestUsername) {
             const updatedComment = await prisma.comment.update({
                 where: { id: body.commentId },
                 data: { content: body.content }

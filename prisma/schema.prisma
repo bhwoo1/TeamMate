@@ -84,6 +84,7 @@ model Team {
   squad       Squad[]   @relation("TeamSquad")
   users       TeamUser[] // 팀에 속한 유저
   comments    Comment[]  // 팀의 댓글
+  schedules   Schedule[] @relation("TeamSchedule") // 팀의 일정 
   joinRequests TeamJoinRequest[] // 팀에 대한 가입 요청들
 
   createdAt DateTime @default(now())
@@ -149,4 +150,15 @@ model Squad {
   recoveryperiod    String
   teamId            Int
   team              Team     @relation("TeamSquad", fields: [teamId], references: [id])
+}
+
+model Schedule {
+  id                Int     @id @default(autoincrement())
+  date              DateTime
+  task              String
+  teamId            Int
+  location          String
+  completed         Boolean @default(false)
+
+  team              Team    @relation("TeamSchedule", fields: [teamId], references: [id])
 }
