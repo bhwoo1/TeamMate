@@ -1,11 +1,14 @@
 import { ReceivedSquad } from "@/app/Type";
+import Link from "next/link";
 
 const PositionList = ({
   position,
   players,
+  teamID,
 }: {
   position: string;
   players: ReceivedSquad[];
+  teamID: number;
 }) => {
   return (
     <div>
@@ -16,7 +19,9 @@ const PositionList = ({
         <>
           {players.map((player) => (
             <div key={player.backnumber}>
-              <p>{player.name}</p>
+              <Link href={`/team/${teamID}/squad/${player.backnumber}`}>
+                <p>{player.name}</p>
+              </Link>
             </div>
           ))}
         </>

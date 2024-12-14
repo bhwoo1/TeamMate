@@ -32,10 +32,10 @@ const SquadList = ({ teamID }: { teamID: number }) => {
   if (isError) return <p className="text-center">Error: {error.message}</p>;
   return (
     <>
-        <PositionList position={"GK"} players={GKs} />
-        <PositionList position={"DF"} players={DFs} />
-        <PositionList position={"MF"} players={MFs} />
-        <PositionList position={"FW"} players={FWs} />
+        <PositionList position={"GK"} players={GKs} teamID={teamID} />
+        <PositionList position={"DF"} players={DFs} teamID={teamID} />
+        <PositionList position={"MF"} players={MFs} teamID={teamID} />
+        <PositionList position={"FW"} players={FWs} teamID={teamID} />
         <RegisterButton teamID={teamID} />
     </>
   );
