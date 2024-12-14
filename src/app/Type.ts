@@ -73,7 +73,7 @@ export interface Squad {
     profileimage: string | File;
     name: string;
     position: string;
-    birthdate: Date;
+    birthdate: string;
     injury: boolean;
     injuredpart: string;
     recoveryperiod: string;

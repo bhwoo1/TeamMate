@@ -11,7 +11,7 @@ const initialPlayer: Squad = {
   name: "",
   backnumber: 0,
   position: "",
-  birthdate: new Date(),
+  birthdate: "",
   profileimage: new File([], "initialProfileImage.jpg"),
   injury: false,
   injuredpart: "",
@@ -19,9 +19,8 @@ const initialPlayer: Squad = {
 };
 
 
-const submitRoster = async ({player, user}: {player: Squad, user: string}) => {
-  await axios.post("/api/roster", {
-    action: "create",
+const submitRoster = async ({player, user, teamID}: {player: Squad, user: string, teamID: number}) => {
+  await axios.post("/api/squad/register", {
     name: player.name,
     backnumber: player.backnumber,
     birthdate: player.birthdate,
@@ -32,7 +31,8 @@ const submitRoster = async ({player, user}: {player: Squad, user: string}) => {
     recoveryperiod: player.recoveryperiod
   }, {
     headers: {
-      requestUser: user
+      requestUser: user,
+      teamID: teamID
     }
   });
 }
@@ -58,7 +58,7 @@ const uploadFile = async (file: File) => {
 
 }
 
-const SquadRegisterClient = () => {
+const SquadRegisterClient = ({teamID}: {teamID: number}) => {
   const [player, setPlayer] = useState<Squad>(initialPlayer);
   const {data: session} = useSession();
   const router = useRouter();
@@ -66,7 +66,7 @@ const SquadRegisterClient = () => {
   const submitRosterMutation = useMutation(submitRoster, {
     onSuccess: () => {
       alert('등록되었습니다.');
-      router.push('/roster');
+      router.push(`/team/${teamID}/squad`);
     },
     onError: (error: AxiosError) => {
       console.error("Delete request failed:", error.response?.data || error.message);
@@ -94,7 +94,7 @@ const SquadRegisterClient = () => {
   
         // 파일 업로드 후, 선수 등록을 실행
         if (session?.user?.email) {
-          submitRosterMutation.mutate({ player: { ...player, profileimage: fileData.url }, user: String(session.user.email) });
+          submitRosterMutation.mutate({ player: { ...player, profileimage: fileData.url }, user: String(session.user.email), teamID: teamID });
         }
       } catch (error) {
         console.error("파일 업로드 실패:", error);
@@ -156,8 +156,8 @@ const SquadRegisterClient = () => {
             type="date"
             id="birthdate"
             name="birthdate"
-            value={player.birthdate ? player.birthdate.toISOString().split('T')[0] : ''} // Date 객체를 yyyy-mm-dd 형식의 문자열로 변환
-            onChange={(e) => setPlayer({ ...player, birthdate: new Date(e.target.value) })}
+            value={player.birthdate} // Date 객체를 yyyy-mm-dd 형식의 문자열로 변환
+            onChange={(e) => setPlayer({ ...player, birthdate: e.target.value })}
             className="mt-1 p-2 border w-full rounded"
           />
         </div>
