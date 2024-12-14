@@ -42,7 +42,7 @@ export async function DELETE(req: Request) {
             return NextResponse.json(deletedSchedule, {status: 200});
 
         } else {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 400 });
+            return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
     } catch(error) {
