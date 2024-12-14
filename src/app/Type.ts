@@ -70,7 +70,7 @@ export interface Comment {
 
 export interface Squad {
     backnumber: number;
-    profileimage: string;
+    profileimage: string | File;
     name: string;
     position: string;
     birthdate: Date;
